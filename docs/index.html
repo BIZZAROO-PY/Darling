@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Feliz 20 Anos, Julieta ❤️</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-pink': '#ff6b9d',
+                        'soft-pink': '#ffa8c2',
+                        'deep-purple': '#1a0b2e',
+                        'medium-purple': '#2d1b69',
+                        'gold': '#ffd166',
+                        'neon-pink': '#ff4081'
+                    },
+                    fontFamily: {
+                        'playfair': ['Playfair Display', 'serif'],
+                        'inter': ['Inter', 'sans-serif'],
+                        'cursive': ['Dancing Script', 'cursive']
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'fade-in': 'fadeIn 2s ease-out',
+                        'slide-up': 'slideUp 1s ease-out',
+                        'heartbeat': 'heartbeat 1.5s ease-in-out infinite',
+                        'confetti': 'confettiFall 5s linear forwards',
+                        'zoom-in': 'zoomIn 0.5s ease-out'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: 0 },
+                            '100%': { opacity: 1 }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100px)', opacity: 0 },
+                            '100%': { transform: 'translateY(0)', opacity: 1 }
+                        },
+                        heartbeat: {
+                            '0%': { transform: 'scale(1)' },
+                            '14%': { transform: 'scale(1.3)' },
+                            '28%': { transform: 'scale(1)' },
+                            '42%': { transform: 'scale(1.3)' },
+                            '70%': { transform: 'scale(1)' }
+                        },
+                        confettiFall: {
+                            '0%': { transform: 'translateY(-100px) rotate(0deg)', opacity: 1 },
+                            '100%': { transform: 'translateY(100vh) rotate(360deg)', opacity: 0 }
+                        },
+                        zoomIn: {
+                            '0%': { transform: 'scale(0.8)', opacity: 0 },
+                            '100%': { transform: 'scale(1)', opacity: 1 }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Swiper -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-pink: #ff6b9d;
+            --soft-pink: #ffa8c2;
+            --deep-purple: #1a0b2e;
+            --gold: #ffd166;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0617 0%, #1a0b2e 50%, #0a0617 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(45deg, var(--primary-pink), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .bg-gradient {
+            background: linear-gradient(135deg, var(--deep-purple) 0%, #2d1b69 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .fullscreen-slide {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 9999 !important;
+            background: #000 !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            transition: all 0.5s ease !important;
+        }
+        
+        .fullscreen-slide img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: contain !important;
+        }
+        
+        .swiper-slide {
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .swiper-slide-active {
+            transform: scale(1.05);
+        }
+        
+        .parallax-bg {
+            position: absolute;
+            width: 130%;
+            height: 130%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 107, 157, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        .heart {
+            position: absolute;
+            background: var(--primary-pink);
+            transform: rotate(-45deg);
+            animation: heartbeat 2s infinite;
+        }
+        
+        .heart:before,
+        .heart:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-pink);
+            border-radius: 50%;
+        }
+        
+        .heart:before {
+            top: -50%;
+            left: 0;
+        }
+        
+        .heart:after {
+            top: 0;
+            left: 50%;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 20px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* Loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--deep-purple);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            flex-direction: column;
+        }
+        
+        .loading-heart {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-pink);
+            position: relative;
+            transform: rotate(-45deg);
+            animation: heartbeat 1.5s infinite;
+        }
+        
+        .loading-heart:before,
+        .loading-heart:after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: var(--primary-pink);
+            border-radius: 50%;
+        }
+        
+        .loading-heart:before {
+            top: -40px;
+            left: 0;
+        }
+        
+        .loading-heart:after {
+            top: 0;
+            left: 40px;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, var(--primary-pink), var(--gold));
+            border-radius: 4px;
+        }
+        
+        /* Canvas particles */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .swiper-slide {
+                width: 85vw !important;
+                height: 60vh !important;
+            }
+            
+            .fullscreen-slide {
+                height: 100vh !important;
+                padding: 20px !important;
+            }
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    <!-- Loading Screen -->
+    <div id="loading" class="loading-screen">
+        <div class="loading-heart"></div>
+        <div class="mt-8 text-center">
+            <div class="text-2xl font-cursive text-soft-pink mb-2">Uma surpresa para</div>
+            <div class="text-4xl font-playfair text-gradient animate-pulse">Julieta</div>
+        </div>
+    </div>
+
+    <!-- Canvas for Particles -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Main Content -->
+    <div id="main-content" class="hidden">
+        <!-- Hero Section -->
+        <section class="min-h-screen relative flex flex-col items-center justify-center px-4 pt-20">
+            <!-- Background Elements -->
+            <div class="parallax-bg"></div>
+            
+            <!-- Main Title -->
+            <div class="text-center relative z-10 mb-12">
+                <h1 class="text-5xl md:text-7xl font-playfair mb-4 animate-slide-up">
+                    <span class="text-gradient">Julieta</span>
+                </h1>
+                <h2 class="text-2xl md:text-3xl font-light text-soft-pink mb-2 animate-slide-up" style="animation-delay: 0.2s">
+                    Pedro Nguluve Canze
+                </h2>
+                <div class="flex items-center justify-center gap-4 mt-6 animate-slide-up" style="animation-delay: 0.4s">
+                    <div class="w-8 h-px bg-gradient-to-r from-transparent to-primary-pink"></div>
+                    <div class="text-xl text-gold">20 Anos</div>
+                    <div class="w-8 h-px bg-gradient-to-l from-transparent to-primary-pink"></div>
+                </div>
+            </div>
+
+            <!-- Age Display -->
+            <div class="glass-effect rounded-2xl p-8 max-w-2xl mx-auto mb-12 animate-fade-in" style="animation-delay: 0.6s">
+                <div class="text-center">
+                    <div class="text-6xl md:text-8xl font-bold text-gradient mb-4">20</div>
+                    <p class="text-xl text-gray-300">
+                        Duas décadas de luz, amor e beleza<br>
+                        Celebrando você hoje e sempre
+                    </p>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+                <div class="text-center">
+                    <div class="text-sm text-gray-400 mb-2">Deslize para ver as fotos</div>
+                    <svg class="w-6 h-6 mx-auto text-primary-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Photo Gallery Section -->
+        <section class="py-20 px-4 relative">
+            <div class="max-w-7xl mx-auto">
+                <!-- Section Title -->
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl md:text-5xl font-playfair mb-4">
+                        <span class="text-gradient">Nossa História</span>
+                    </h2>
+                    <p class="text-xl text-gray-400">Momentos especiais em 20 anos de vida</p>
+                </div>
+
+                <!-- Swiper Container -->
+                <div class="swiper-container overflow-visible">
+                    <div class="swiper-wrapper">
+                        <!-- Slides will be added by JavaScript -->
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <div class="swiper-button-next !text-primary-pink !hidden md:!flex"></div>
+                    <div class="swiper-button-prev !text-primary-pink !hidden md:!flex"></div>
+                    
+                    <!-- Pagination -->
+                    <div class="swiper-pagination !relative !mt-8"></div>
+                </div>
+
+                <!-- Instructions -->
+                <div class="text-center mt-8 text-gray-400 text-sm">
+                    <p>• Deslize para ver as fotos • Toque para ampliar • Arraste para sair do modo tela cheia •</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Message Section -->
+        <section class="py-20 px-4 relative bg-black/20">
+            <div class="max-w-4xl mx-auto">
+                <!-- Animated Message -->
+                <div class="glass-effect rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                    <!-- Decorative corner -->
+                    <div class="absolute top-0 right-0 w-24 h-24">
+                        <div class="absolute top-4 right-4 w-16 h-16 border-t-2 border-r-2 border-primary-pink"></div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-24 h-24">
+                        <div class="absolute bottom-4 left-4 w-16 h-16 border-b-2 border-l-2 border-gold"></div>
+                    </div>
+                    
+                    <!-- Message Content -->
+                    <div class="relative z-10">
+                        <h3 class="text-3xl font-playfair mb-8 text-center text-gradient">
+                            Para minha Julieta
+                        </h3>
+                        
+                        <div class="space-y-6 text-lg leading-relaxed text-gray-300">
+                            <p class="animate-fade-in" style="animation-delay: 0.1s">
+                                Meu amor, hoje celebramos muito mais do que 20 anos. Celebramos 20 anos de você iluminando o mundo com sua presença.
+                            </p>
+                            
+                            <p class="animate-fade-in" style="animation-delay: 0.3s">
+                                Cada sorriso seu é como um raio de sol em meus dias, cada gesto seu uma prova do amor que temos.
+                            </p>
+                            
+                            <p class="animate-fade-in" style="animation-delay: 0.5s">
+                                Nestas duas décadas, você cresceu em beleza, sabedoria e bondade. E eu tenho a sorte de testemunhar cada passo dessa jornada.
+                            </p>
+                            
+                            <p class="animate-fade-in" style="animation-delay: 0.7s">
+                                Que este novo ano traga ainda mais alegrias, conquistas e momentos inesquecíveis. Estarei ao seu lado em cada um deles.
+                            </p>
+                            
+                            <div class="pt-6 mt-6 border-t border-white/10 animate-fade-in" style="animation-delay: 0.9s">
+                                <p class="text-2xl font-cursive text-center text-primary-pink">
+                                    Com todo meu amor, para sempre
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Celebration -->
+        <section class="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
+            <!-- Background Effect -->
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-deep-purple/50 to-transparent"></div>
+            
+            <!-- Content -->
+            <div class="text-center relative z-10 max-w-3xl mx-auto">
+                <!-- Big Heart -->
+                <div class="relative inline-block mb-8 animate-float">
+                    <svg class="w-32 h-32 text-primary-pink animate-heartbeat" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                
+                <!-- Final Message -->
+                <h2 class="text-5xl md:text-7xl font-playfair mb-6">
+                    <span class="text-gradient">Feliz Aniversário</span>
+                </h2>
+                
+                <div class="glass-effect rounded-2xl p-8 mb-8">
+                    <p class="text-2xl md:text-3xl text-soft-pink leading-relaxed">
+                        Julieta, que seus 20 anos sejam apenas o começo<br>
+                        de uma vida repleta de felicidade e amor
+                    </p>
+                </div>
+                
+                <!-- Date -->
+                <div class="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/5">
+                    <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span class="text-gray-400">Celebrando 20 anos em 2024</span>
+                </div>
+            </div>
+            
+            <!-- Floating Hearts -->
+            <div id="floating-hearts"></div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-8 px-4 text-center text-gray-500 text-sm">
+            <p>Feito com ❤️ especialmente para Julieta Pedro Nguluve Canze</p>
+            <p class="mt-2">Uma celebração de 20 anos de luz e amor</p>
+        </footer>
+    </div>
+
+    <!-- Congratulations Popup -->
+    <div id="congratulations" class="fixed inset-0 z-50 flex items-center justify-center pointer-events-none opacity-0">
+        <div class="text-center transform scale-0 transition-transform duration-500">
+            <div class="text-6xl md:text-8xl font-cursive text-primary-pink mb-4">Parabéns!</div>
+            <div class="text-2xl text-soft-pink">Julieta, pelos seus 20 anos!</div>
+        </div>
+    </div>
+
+    <!-- Audio -->
+    <audio id="background-music" loop autoplay>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-heartbeat-essence-532.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // URLs das fotos
+        const photos = [
+            "https://drive.google.com/uc?export=view&id=1AILJxkUaSrRYhsZsSkdW-s3d6fYquz1K",
+            "https://drive.google.com/uc?export=view&id=1fwHSf3ZzG2PwY5Eha3jAv1G8cHiR77yJ",
+            "https://drive.google.com/uc?export=view&id=1paWMAyns0uxoW1AipDytIFdWbFcbWnsX",
+            "https://drive.google.com/uc?export=view&id=1OdKOiUmx-fhgujPOPl_-sJiBrrDJDQa7",
+            "https://drive.google.com/uc?export=view&id=1lyRmgKQhOxEtlbQWO62FbrZC8JayAjXG",
+            "https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1516937941344-00b4e0337589?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+        ];
+
+        // Elementos DOM
+        const loadingScreen = document.getElementById('loading');
+        const mainContent = document.getElementById('main-content');
+        const congratulations = document.getElementById('congratulations');
+        const audio = document.getElementById('background-music');
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        const floatingHearts = document.getElementById('floating-hearts');
+
+        // Estado do aplicativo
+        let particles = [];
+        let hearts = [];
+        let isFullscreen = false;
+        let currentFullscreenSlide = null;
+        let swiperInstance = null;
+
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Configurar canvas
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // Iniciar música (com tratamento para autoplay policies)
+            await startMusic();
+            
+            // Mostrar tela de carregamento por 3 segundos
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // Criar explosão inicial
+            createExplosion();
+            
+            // Mostrar mensagem de parabéns
+            showCongratulations();
+            
+            // Esconder tela de carregamento
+            hideLoading();
+            
+            // Inicializar aplicativo
+            initApp();
+            
+            // Iniciar animações
+            initAnimations();
+        });
+
+        // Iniciar música
+        async function startMusic() {
+            audio.volume = 0.3;
+            try {
+                await audio.play();
+            } catch (err) {
+                console.log("Autoplay bloqueado, tentando novamente após interação");
+                document.addEventListener('click', () => {
+                    audio.play().catch(e => console.log("Ainda não foi possível tocar a música"));
+                }, { once: true });
+            }
+        }
+
+        // Criar explosão inicial
+        function createExplosion() {
+            // Criar partículas
+            for (let i = 0; i < 200; i++) {
+                createParticle(
+                    window.innerWidth / 2,
+                    window.innerHeight / 2,
+                    i < 100 ? '#ff6b9d' : '#ffd166'
+                );
+            }
+            
+            // Criar confetes
+            createConfetti();
+        }
+
+        // Mostrar mensagem de parabéns
+        function showCongratulations() {
+            const popup = congratulations;
+            gsap.to(popup, {
+                opacity: 1,
+                duration: 1,
+                pointerEvents: 'all'
+            });
+            
+            gsap.to(popup.querySelector('div'), {
+                scale: 1,
+                duration: 0.8,
+                ease: 'back.out(1.7)',
+                onComplete: () => {
+                    // Esconder após 3 segundos
+                    setTimeout(() => {
+                        gsap.to(popup, {
+                            opacity: 0,
+                            duration: 1,
+                            pointerEvents: 'none'
+                        });
+                    }, 3000);
+                }
+            });
+        }
+
+        // Esconder tela de carregamento
+        function hideLoading() {
+            gsap.to(loadingScreen, {
+                opacity: 0,
+                duration: 1,
+                onComplete: () => {
+                    loadingScreen.style.display = 'none';
+                    mainContent.classList.remove('hidden');
+                    gsap.from(mainContent, {
+                        opacity: 0,
+                        duration: 1
+                    });
+                }
+            });
+        }
+
+        // Inicializar aplicativo
+        function initApp() {
+            initSwiper();
+            initParticles();
+            createFloatingHearts();
+            initEventListeners();
+        }
+
+        // Inicializar Swiper
+        function initSwiper() {
+            const swiperWrapper = document.querySelector('.swiper-wrapper');
+            
+            // Adicionar slides
+            photos.forEach((photo, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'swiper-slide rounded-3xl overflow-hidden cursor-pointer glass-effect';
+                slide.innerHTML = `
+                    <div class="relative w-full h-full">
+                        <img 
+                            src="${photo}" 
+                            alt="Foto ${index + 1} da Julieta"
+                            class="w-full h-full object-cover transition-transform duration-700"
+                            loading="lazy"
+                        >
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                `;
+                swiperWrapper.appendChild(slide);
+            });
+
+            // Inicializar Swiper
+            swiperInstance = new Swiper('.swiper-container', {
+                loop: false,
+                speed: 800,
+                spaceBetween: 30,
+                slidesPerView: 'auto',
+                centeredSlides: true,
+                grabCursor: true,
+                effect: 'coverflow',
+                coverflowEffect: {
+                    rotate: 0,
+                    stretch: 0,
+                    depth: 100,
+                    modifier: 2.5,
+                    slideShadows: true,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    320: {
+                        slidesPerView: 1,
+                        spaceBetween: 20
+                    },
+                    768: {
+                        slidesPerView: 'auto',
+                        spaceBetween: 30
+                    }
+                }
+            });
+
+            // Evento de clique para fullscreen
+            swiperWrapper.addEventListener('click', (e) => {
+                const slide = e.target.closest('.swiper-slide');
+                if (slide && slide.classList.contains('swiper-slide-active')) {
+                    toggleFullscreen(slide);
+                }
+            });
+
+            // Evento de drag para sair do fullscreen
+            let startY = 0;
+            swiperWrapper.addEventListener('touchstart', (e) => {
+                if (isFullscreen) {
+                    startY = e.touches[0].clientY;
+                }
+            });
+
+            swiperWrapper.addEventListener('touchmove', (e) => {
+                if (isFullscreen) {
+                    const currentY = e.touches[0].clientY;
+                    const deltaY = currentY - startY;
+                    
+                    if (Math.abs(deltaY) > 100) {
+                        exitFullscreen();
+                    }
+                }
+            });
+        }
+
+        // Alternar fullscreen
+        function toggleFullscreen(slide) {
+            if (!isFullscreen) {
+                // Entrar no fullscreen
+                slide.classList.add('fullscreen-slide');
+                document.body.style.overflow = 'hidden';
+                isFullscreen = true;
+                currentFullscreenSlide = slide;
+                
+                // Esconder outros elementos
+                gsap.to('.swiper-button-next, .swiper-button-prev, .swiper-pagination', {
+                    opacity: 0,
+                    duration: 0.3
+                });
+            } else {
+                exitFullscreen();
+            }
+        }
+
+        // Sair do fullscreen
+        function exitFullscreen() {
+            if (currentFullscreenSlide) {
+                currentFullscreenSlide.classList.remove('fullscreen-slide');
+                document.body.style.overflow = '';
+                isFullscreen = false;
+                currentFullscreenSlide = null;
+                
+                // Mostrar outros elementos
+                gsap.to('.swiper-button-next, .swiper-button-prev, .swiper-pagination', {
+                    opacity: 1,
+                    duration: 0.3
+                });
+            }
+        }
+
+        // Sistema de partículas
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 2;
+                this.speedX = Math.random() * 6 - 3;
+                this.speedY = Math.random() * 6 - 3;
+                this.color = color;
+                this.life = 100;
+                this.decay = Math.random() * 0.05 + 0.02;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= this.decay * 100;
+                this.size *= 0.95;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life / 100;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function createParticle(x, y, color) {
+            particles.push(new Particle(x, y, color));
+        }
+
+        function initParticles() {
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Atualizar e desenhar partículas
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    particles[i].update();
+                    particles[i].draw();
+                    
+                    if (particles[i].life <= 0 || particles[i].size <= 0.5) {
+                        particles.splice(i, 1);
+                    }
+                }
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+            
+            // Adicionar partículas periodicamente
+            setInterval(() => {
+                if (particles.length < 100) {
+                    createParticle(
+                        Math.random() * canvas.width,
+                        Math.random() * canvas.height,
+                        Math.random() > 0.5 ? '#ff6b9d' : '#ffd166'
+                    );
+                }
+            }, 100);
+        }
+
+        // Criar confetes
+        function createConfetti() {
+            const colors = ['#ff6b9d', '#ffd166', '#ffffff', '#a8e6cf'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                document.body.appendChild(confetti);
+                
+                // Animação
+                gsap.to(confetti, {
+                    y: window.innerHeight + 100,
+                    rotation: Math.random() * 720,
+                    opacity: 1,
+                    duration: Math.random() * 3 + 2,
+                    ease: 'power2.out',
+                    onComplete: () => confetti.remove()
+                });
+            }
+        }
+
+        // Criar corações flutuantes
+        function createFloatingHearts() {
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.style.width = `${Math.random() * 20 + 10}px`;
+                    heart.style.height = heart.style.width;
+                    heart.style.left = `${Math.random() * 100}vw`;
+                    heart.style.top = `${Math.random() * 100}vh`;
+                    heart.style.opacity = Math.random() * 0.3 + 0.1;
+                    heart.style.animationDelay = `${Math.random() * 2}s`;
+                    
+                    floatingHearts.appendChild(heart);
+                }, i * 300);
+            }
+        }
+
+        // Inicializar animações GSAP
+        function initAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Animar elementos ao aparecer
+            gsap.utils.toArray('.animate-fade-in').forEach((el, i) => {
+                gsap.from(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 80%',
+                        end: 'bottom 20%',
+                        toggleActions: 'play none none reverse'
+                    },
+                    opacity: 0,
+                    y: 50,
+                    duration: 1,
+                    delay: i * 0.2
+                });
+            });
+            
+            // Parallax effect
+            gsap.to('.parallax-bg', {
+                scrollTrigger: {
+                    scrub: true
+                },
+                x: 100,
+                y: 100,
+                duration: 1
+            });
+        }
+
+        // Event listeners
+        function initEventListeners() {
+            // Redimensionar canvas
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+            
+            // Sair do fullscreen com ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && isFullscreen) {
+                    exitFullscreen();
+                }
+            });
+            
+            // Sair do fullscreen ao rolar
+            window.addEventListener('wheel', (e) => {
+                if (isFullscreen) {
+                    exitFullscreen();
+                }
+            });
+            
+            // Criar partículas ao clicar
+            document.addEventListener('click', (e) => {
+                for (let i = 0; i < 10; i++) {
+                    createParticle(e.clientX, e.clientY, '#ff6b9d');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
