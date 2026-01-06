@@ -4,16 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>20 Anos - Julieta ❤️</title>
+    <title>🎬 20 Anos - Julieta ❤️</title>
     
     <!-- Fontes Google -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&family=Dancing+Script:wght@700&family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=Dancing+Script:wght@700&family=Cinzel:wght@400;700;900&family=Montserrat:wght@300;400;500;600;700;800&family=Abril+Fatface&display=swap" rel="stylesheet">
     
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
     
     <!-- CSS Personalizado -->
     <style>
@@ -25,8 +26,10 @@
             --purple-light: #2d1b69;
             --neon-pink: #ff00ff;
             --neon-blue: #00ffff;
+            --neon-green: #00ff00;
             --frame-gold: #d4af37;
             --frame-silver: #c0c0c0;
+            --crimson: #dc143c;
         }
         
         * {
@@ -39,6 +42,7 @@
         html {
             scroll-behavior: smooth;
             overflow-x: hidden;
+            background: #000;
         }
         
         body {
@@ -49,9 +53,10 @@
             touch-action: pan-y;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M16 3C8.8 3 3 8.8 3 16s5.8 13 13 13 13-5.8 13-13S23.2 3 16 3zm0 24c-6.1 0-11-4.9-11-11S9.9 5 16 5s11 4.9 11 11-4.9 11-11 11z" fill="%23ff4081"/><circle cx="16" cy="16" r="4" fill="%23ff4081"/></svg>'), auto;
         }
         
-        /* Loading Screen */
+        /* Loading Screen Premium */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -64,23 +69,71 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            background: radial-gradient(circle at center, #1a0b2e 0%, #000 100%);
         }
         
-        .loader {
-            width: 60px;
-            height: 60px;
-            border: 3px solid var(--primary-pink);
-            border-top-color: transparent;
+        .loading-heart {
+            width: 100px;
+            height: 100px;
+            background: var(--primary-pink);
+            transform: rotate(45deg);
+            position: relative;
+            margin-bottom: 30px;
+            animation: heartbeat 1.2s ease-in-out infinite, glowPulse 2s ease-in-out infinite;
+            box-shadow: 0 0 50px var(--primary-pink);
+        }
+        
+        .loading-heart:before,
+        .loading-heart:after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: var(--primary-pink);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
         }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .loading-heart:before {
+            top: -50px;
+            left: 0;
         }
         
-        /* Cinematic Opening */
+        .loading-heart:after {
+            top: 0;
+            left: 50px;
+        }
+        
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 50px var(--primary-pink); }
+            50% { box-shadow: 0 0 100px var(--primary-pink); }
+        }
+        
+        .loading-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading-text::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: loadingShine 2s infinite;
+        }
+        
+        @keyframes loadingShine {
+            to { left: 100%; }
+        }
+        
+        /* Cinematic Opening com Explosão */
         .cinematic-opening {
             position: fixed;
             top: 0;
@@ -103,8 +156,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc0IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWx0ZXI9InVybCgjYSkiIG9wYWNpdHk9Ii4wMyIvPjwvc3ZnPg==');
-            opacity: 0.08;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc0IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWx0ZXI9InVybCgjYSkiIG9wYWNpdHk9Ii4wNSIvPjwvc3ZnPg==');
+            opacity: 0.12;
             pointer-events: none;
         }
         
@@ -117,66 +170,97 @@
             background: linear-gradient(
                 to bottom,
                 transparent 50%,
-                rgba(0, 0, 0, 0.2) 50%
+                rgba(0, 0, 0, 0.3) 50%
             );
-            background-size: 100% 4px;
+            background-size: 100% 3px;
             pointer-events: none;
-            animation: scanlines 8s linear infinite;
+            animation: scanlines 6s linear infinite;
         }
         
         @keyframes scanlines {
             0% { transform: translateY(0); }
-            100% { transform: translateY(4px); }
+            100% { transform: translateY(3px); }
+        }
+        
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.8) 100%);
+            pointer-events: none;
+        }
+        
+        .countdown {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary-pink);
+            font-family: 'Montserrat', sans-serif;
+            text-shadow: 0 0 20px var(--primary-pink);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
         .cinematic-text {
-            font-size: clamp(2rem, 8vw, 5rem);
-            font-family: 'Cinzel', serif;
-            font-weight: bold;
+            font-size: clamp(3rem, 15vw, 8rem);
+            font-family: 'Abril Fatface', serif;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 0.5em;
+            letter-spacing: 0.2em;
             text-align: center;
             color: transparent;
-            background: linear-gradient(45deg, var(--primary-pink), var(--gold));
+            background: linear-gradient(45deg, var(--primary-pink), var(--gold), var(--neon-blue));
             -webkit-background-clip: text;
             background-clip: text;
             position: relative;
             overflow: hidden;
             margin-bottom: 2rem;
+            text-shadow: 0 0 50px rgba(255, 64, 129, 0.5);
+            animation: textGlow 3s ease-in-out infinite alternate;
         }
         
-        .cinematic-text::after {
-            content: '';
+        @keyframes textGlow {
+            from { filter: drop-shadow(0 0 20px var(--primary-pink)); }
+            to { filter: drop-shadow(0 0 40px var(--gold)); }
+        }
+        
+        .cinematic-text::before {
+            content: attr(data-text);
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                to right,
-                transparent 20%,
-                rgba(255, 255, 255, 0.1) 50%,
-                transparent 80%
-            );
-            animation: shine 3s infinite;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 4s infinite linear;
         }
         
         @keyframes shine {
-            0% { transform: translateX(-100%) rotate(25deg); }
-            100% { transform: translateX(100%) rotate(25deg); }
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
         
-        .countdown {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary-pink);
-            font-family: 'Montserrat', sans-serif;
+        .subtitle-text {
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            text-align: center;
+            margin-top: 1rem;
+            opacity: 0.9;
+            letter-spacing: 0.1em;
         }
         
-        /* Explosão de Corações */
+        /* Explosão de Corações Container */
         .heart-explosion-container {
             position: fixed;
             top: 0;
@@ -189,9 +273,10 @@
         
         .explosion-heart {
             position: absolute;
-            font-size: 2rem;
+            font-size: 2.5rem;
             opacity: 0;
             pointer-events: none;
+            filter: drop-shadow(0 0 10px currentColor);
         }
         
         /* Main Content */
@@ -200,7 +285,7 @@
             opacity: 0;
         }
         
-        /* Hero Section */
+        /* Hero Section Premium */
         .hero-section {
             min-height: 100vh;
             position: relative;
@@ -210,6 +295,7 @@
             align-items: center;
             padding: 20px;
             overflow: hidden;
+            background: radial-gradient(ellipse at center, var(--purple-dark) 0%, #000 70%);
         }
         
         .hero-bg {
@@ -218,88 +304,118 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 30% 20%, var(--purple-dark) 0%, #000 70%);
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 64, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%);
             z-index: -1;
+            animation: bgPulse 10s ease-in-out infinite alternate;
         }
         
-        .floating-particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-        
-        .particle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: var(--primary-pink);
-            border-radius: 50%;
-            pointer-events: none;
+        @keyframes bgPulse {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 0.7; transform: scale(1.1); }
         }
         
         .hero-title {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 2;
         }
         
         .hero-name {
-            font-size: clamp(2.5rem, 10vw, 4.5rem);
+            font-size: clamp(3rem, 15vw, 6rem);
             font-family: 'Playfair Display', serif;
-            font-weight: 700;
+            font-weight: 900;
             margin-bottom: 0.5rem;
-            background: linear-gradient(45deg, var(--primary-pink), var(--gold));
+            background: linear-gradient(45deg, var(--primary-pink), var(--gold), var(--neon-blue));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            text-shadow: 0 0 30px rgba(255, 64, 129, 0.3);
+            animation: nameGlow 4s ease-in-out infinite alternate;
+        }
+        
+        @keyframes nameGlow {
+            from { filter: drop-shadow(0 0 30px rgba(255, 64, 129, 0.3)); }
+            to { filter: drop-shadow(0 0 50px rgba(255, 215, 0, 0.3)); }
         }
         
         .hero-subtitle {
-            font-size: clamp(1.2rem, 5vw, 1.8rem);
-            color: rgba(255, 255, 255, 0.8);
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 300;
             margin-bottom: 1rem;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.1em;
         }
         
         .age-display {
-            font-size: clamp(4rem, 15vw, 8rem);
+            font-size: clamp(6rem, 25vw, 12rem);
             font-weight: 900;
             color: var(--gold);
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-            margin: 1rem 0;
+            text-shadow: 
+                0 0 30px var(--gold),
+                0 0 60px var(--gold),
+                0 0 90px var(--gold);
+            margin: 2rem 0;
+            position: relative;
+            animation: agePulse 2s ease-in-out infinite;
         }
         
-        /* Quadros de Fotos */
+        @keyframes agePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .age-display::after {
+            content: 'ANOS';
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            color: var(--primary-pink);
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 0.3em;
+        }
+        
+        /* Gallery Section Premium */
         .gallery-section {
             min-height: 100vh;
             position: relative;
-            padding: 40px 20px;
-            background: linear-gradient(135deg, #0a0617 0%, var(--purple-dark) 100%);
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #0a0617 0%, var(--purple-dark) 50%, #000 100%);
             overflow: hidden;
         }
         
         .gallery-title {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
+            position: relative;
         }
         
         .gallery-title h2 {
-            font-size: clamp(2rem, 8vw, 3.5rem);
+            font-size: clamp(2.5rem, 10vw, 4.5rem);
             font-family: 'Playfair Display', serif;
             background: linear-gradient(45deg, var(--primary-pink), var(--gold));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(255, 64, 129, 0.3);
         }
         
         .gallery-title p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
         }
         
+        /* Photo Frames com Morph */
         .photo-frames-container {
             position: relative;
             width: 100%;
@@ -309,16 +425,17 @@
         
         .photo-frame {
             position: absolute;
-            width: 150px;
-            height: 200px;
+            width: 180px;
+            height: 240px;
             perspective: 1000px;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
         }
         
         .photo-frame:hover {
-            transform: scale(1.05);
-            z-index: 10 !important;
+            transform: scale(1.1);
+            z-index: 100 !important;
         }
         
         .frame-inner {
@@ -326,11 +443,11 @@
             height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
         .photo-frame:hover .frame-inner {
-            transform: rotateY(10deg) rotateX(5deg);
+            transform: rotateY(15deg) rotateX(5deg) translateZ(20px);
         }
         
         .frame-front, .frame-back {
@@ -338,42 +455,69 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 10px;
+            border-radius: 15px;
             overflow: hidden;
+            border: 2px solid rgba(212, 175, 55, 0.5);
         }
         
         .frame-front {
-            background: var(--frame-gold);
-            padding: 12px;
+            background: linear-gradient(135deg, var(--frame-gold), #b8860b);
+            padding: 15px;
             box-shadow: 
-                0 0 0 1px rgba(255, 255, 255, 0.1),
-                0 0 30px rgba(212, 175, 55, 0.3),
-                inset 0 0 20px rgba(0, 0, 0, 0.2);
+                inset 0 0 30px rgba(0, 0, 0, 0.3),
+                0 0 50px rgba(212, 175, 55, 0.4);
         }
         
         .frame-back {
-            background: linear-gradient(135deg, #2d1b69, #1a0b2e);
+            background: linear-gradient(135deg, var(--purple-light), var(--purple-dark));
             transform: rotateY(180deg);
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Dancing Script', cursive;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: var(--gold);
             text-align: center;
-            padding: 20px;
+            padding: 30px;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
         }
         
         .photo-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 5px;
-            transition: transform 0.5s ease;
+            border-radius: 10px;
+            transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: sepia(0.2) brightness(1.1);
         }
         
+        /* Animação de Morph nas Fotos */
         .photo-frame:hover .photo-img {
-            transform: scale(1.05);
+            animation: photoMorph 3s infinite alternate;
+            filter: sepia(0) brightness(1.2) contrast(1.1);
+        }
+        
+        @keyframes photoMorph {
+            0% { 
+                border-radius: 10px;
+                transform: scale(1) rotate(0deg);
+            }
+            25% { 
+                border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+                transform: scale(1.02) rotate(1deg);
+            }
+            50% { 
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+                transform: scale(1.01) rotate(-1deg);
+            }
+            75% { 
+                border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+                transform: scale(1.03) rotate(0.5deg);
+            }
+            100% { 
+                border-radius: 10px;
+                transform: scale(1) rotate(0deg);
+            }
         }
         
         .frame-decoration {
@@ -387,57 +531,58 @@
         
         .corner {
             position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.8);
+            width: 25px;
+            height: 25px;
+            border: 3px solid rgba(255, 255, 255, 0.9);
         }
         
         .corner-tl {
-            top: 8px;
-            left: 8px;
+            top: 10px;
+            left: 10px;
             border-right: none;
             border-bottom: none;
         }
         
         .corner-tr {
-            top: 8px;
-            right: 8px;
+            top: 10px;
+            right: 10px;
             border-left: none;
             border-bottom: none;
         }
         
         .corner-bl {
-            bottom: 8px;
-            left: 8px;
+            bottom: 10px;
+            left: 10px;
             border-right: none;
             border-top: none;
         }
         
         .corner-br {
-            bottom: 8px;
-            right: 8px;
+            bottom: 10px;
+            right: 10px;
             border-left: none;
             border-top: none;
         }
         
         .frame-number {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            width: 25px;
-            height: 25px;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--gold);
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 0.8rem;
+            font-size: 1rem;
             font-weight: bold;
             backdrop-filter: blur(5px);
+            border: 1px solid var(--gold);
         }
         
-        /* Fullscreen Overlay */
+        /* Fullscreen Overlay Premium */
         .fullscreen-overlay {
             position: fixed;
             top: 0;
@@ -454,48 +599,60 @@
         
         .fullscreen-image {
             max-width: 95%;
-            max-height: 80%;
+            max-height: 85%;
             object-fit: contain;
-            border-radius: 10px;
-            box-shadow: 0 0 100px rgba(255, 64, 129, 0.3);
+            border-radius: 15px;
+            box-shadow: 
+                0 0 100px rgba(255, 64, 129, 0.5),
+                0 0 200px rgba(255, 215, 0, 0.3);
+            animation: fullscreenGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes fullscreenGlow {
+            from { box-shadow: 0 0 100px rgba(255, 64, 129, 0.5); }
+            to { box-shadow: 0 0 150px rgba(255, 64, 129, 0.8); }
         }
         
         .close-fullscreen {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.1);
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.15);
             color: white;
-            border: none;
-            width: 50px;
-            height: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            font-size: 1.5rem;
+            font-size: 2rem;
             cursor: pointer;
             backdrop-filter: blur(10px);
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .close-fullscreen:hover {
+            background: rgba(255, 64, 129, 0.3);
+            border-color: var(--primary-pink);
+            transform: scale(1.1);
         }
         
         .exit-hint {
             position: absolute;
-            bottom: 40px;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
+            bottom: 50px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
             text-align: center;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px 20px;
-            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 30px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             animation: fadeInOut 3s infinite;
         }
         
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-        
-        /* Message Section */
+        /* Message Section Premium */
         .message-section {
             min-height: 100vh;
             position: relative;
@@ -503,20 +660,23 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px 20px;
-            background: linear-gradient(to bottom, #000, var(--purple-dark));
+            padding: 60px 20px;
+            background: linear-gradient(to bottom, #000, var(--purple-dark) 30%, #000);
             overflow: hidden;
         }
         
         .message-container {
-            max-width: 800px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 40px;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border-radius: 40px;
+            padding: 60px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 0 100px rgba(255, 64, 129, 0.1);
         }
         
         .message-container::before {
@@ -525,35 +685,51 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-pink), var(--gold));
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-pink), var(--gold), var(--neon-blue));
+        }
+        
+        .message-container::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 64, 129, 0.1) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            z-index: -1;
         }
         
         .message-title {
-            font-size: clamp(2rem, 8vw, 3rem);
+            font-size: clamp(2.5rem, 10vw, 4rem);
             font-family: 'Dancing Script', cursive;
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
             color: var(--primary-pink);
+            text-shadow: 0 0 20px rgba(255, 64, 129, 0.5);
         }
         
         .message-text {
-            font-size: clamp(1rem, 4vw, 1.2rem);
-            line-height: 1.8;
-            color: rgba(255, 255, 255, 0.9);
+            font-size: clamp(1.1rem, 4vw, 1.4rem);
+            line-height: 1.9;
+            color: rgba(255, 255, 255, 0.95);
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
+            font-weight: 300;
+            letter-spacing: 0.02em;
         }
         
         .signature {
             text-align: right;
             font-family: 'Dancing Script', cursive;
-            font-size: clamp(1.5rem, 6vw, 2rem);
+            font-size: clamp(2rem, 8vw, 3rem);
             color: var(--gold);
-            margin-top: 2rem;
+            margin-top: 3rem;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
         }
         
-        /* Final Section */
+        /* Final Section Premium */
         .final-section {
             min-height: 100vh;
             position: relative;
@@ -561,27 +737,44 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            background: radial-gradient(circle at center, var(--purple-dark) 0%, #000 70%);
+            padding: 60px 20px;
+            background: radial-gradient(ellipse at center, var(--purple-dark) 0%, #000 70%);
+            overflow: hidden;
         }
         
         .final-title {
-            font-size: clamp(2.5rem, 10vw, 4rem);
+            font-size: clamp(3rem, 15vw, 6rem);
             font-family: 'Playfair Display', serif;
             text-align: center;
-            margin-bottom: 2rem;
-            background: linear-gradient(45deg, var(--primary-pink), var(--gold), var(--neon-blue));
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, var(--primary-pink), var(--gold), var(--neon-blue), var(--neon-pink));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            animation: gradientShift 3s infinite alternate;
+            animation: gradientShift 4s infinite alternate, titleFloat 3s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 64, 129, 0.3);
         }
         
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
         
+        .final-heart {
+            font-size: 8rem;
+            margin: 2rem 0;
+            animation: 
+                heartbeat 1.5s ease-in-out infinite,
+                heartGlow 2s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 20px var(--primary-pink));
+        }
+        
+        @keyframes heartGlow {
+            from { filter: drop-shadow(0 0 20px var(--primary-pink)); }
+            to { filter: drop-shadow(0 0 40px var(--gold)); }
+        }
+        
+        /* Fireworks Premium */
         .fireworks {
             position: absolute;
             top: 0;
@@ -589,98 +782,138 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
+            z-index: 1;
         }
         
         .firework {
             position: absolute;
-            width: 4px;
-            height: 4px;
+            width: 6px;
+            height: 6px;
             background: var(--primary-pink);
             border-radius: 50%;
+            filter: drop-shadow(0 0 5px currentColor);
         }
         
         /* Scroll Indicator */
         .scroll-indicator {
             position: fixed;
-            bottom: 20px;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 20px;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            border-radius: 30px;
+            backdrop-filter: blur(15px);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
             animation: bounce 2s infinite;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
         
-        @keyframes bounce {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-10px); }
-        }
-        
-        /* Progress Bar */
+        /* Progress Bar Premium */
         .progress-bar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-pink), var(--gold));
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-pink), var(--gold), var(--neon-blue));
             transform-origin: 0%;
             z-index: 1000;
+            box-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
         }
         
-        /* Morph Animation */
+        /* Morph Shapes Premium */
         .morph-shape {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(45deg, var(--primary-pink), var(--purple-light));
+            opacity: 0.08;
+            pointer-events: none;
+            animation: morph 20s infinite linear, float 15s infinite ease-in-out;
+            filter: blur(20px);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-50px) rotate(180deg); }
+        }
+        
+        /* Lens Flares */
+        .lens-flare {
             position: absolute;
             width: 200px;
             height: 200px;
-            background: linear-gradient(45deg, var(--primary-pink), var(--purple-light));
-            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-            opacity: 0.1;
-            animation: morph 15s infinite linear;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
             pointer-events: none;
+            filter: blur(40px);
+            opacity: 0.3;
+            animation: flarePulse 8s infinite alternate;
         }
         
-        @keyframes morph {
-            0%, 100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
-            25% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
-            75% { border-radius: 60% 30% 40% 70% / 60% 50% 40% 60%; }
+        @keyframes flarePulse {
+            0% { opacity: 0.1; transform: scale(0.8); }
+            100% { opacity: 0.4; transform: scale(1.2); }
         }
         
         /* Mobile Optimizations */
         @media (max-width: 768px) {
             .photo-frame {
-                width: 120px;
-                height: 160px;
+                width: 140px;
+                height: 190px;
             }
             
             .message-container {
-                padding: 25px;
+                padding: 40px 25px;
                 margin: 0 15px;
+                border-radius: 30px;
             }
             
             .scroll-indicator {
-                font-size: 0.7rem;
-                padding: 8px 15px;
+                font-size: 0.8rem;
+                padding: 12px 25px;
+                bottom: 20px;
             }
             
             .morph-shape {
-                width: 150px;
-                height: 150px;
+                width: 200px;
+                height: 200px;
+            }
+            
+            .cinematic-text {
+                font-size: clamp(2.5rem, 12vw, 5rem);
+                letter-spacing: 0.1em;
+            }
+            
+            .age-display {
+                font-size: clamp(5rem, 20vw, 8rem);
+            }
+            
+            .final-heart {
+                font-size: 6rem;
             }
         }
         
         @media (max-width: 480px) {
             .photo-frame {
-                width: 100px;
-                height: 140px;
+                width: 120px;
+                height: 160px;
+            }
+            
+            .frame-back {
+                font-size: 1.5rem;
+                padding: 20px;
+            }
+            
+            .cinematic-text {
+                letter-spacing: 0.05em;
             }
         }
         
@@ -700,42 +933,60 @@
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
+    <!-- Loading Screen Premium -->
     <div class="loading-screen" id="loadingScreen">
-        <div class="loader"></div>
-        <div style="color: var(--primary-pink); font-family: 'Montserrat', sans-serif; font-size: 1.2rem; margin-top: 10px;">
-            Preparando sua experiência especial...
+        <div class="loading-heart"></div>
+        <div class="loading-text">CARREGANDO ESPECIAL</div>
+        <div style="color: rgba(255, 255, 255, 0.6); margin-top: 20px; font-size: 1rem;">
+            Uma experiência cinematográfica para Julieta
         </div>
     </div>
 
     <!-- Container para Explosão de Corações -->
     <div class="heart-explosion-container" id="heartExplosionContainer"></div>
 
-    <!-- Cinematic Opening -->
+    <!-- Cinematic Opening Premium -->
     <div class="cinematic-opening" id="cinematicOpening">
         <div class="film-grain"></div>
         <div class="scanlines"></div>
+        <div class="vignette"></div>
+        
+        <!-- Lens Flares -->
+        <div class="lens-flare" style="top: 20%; left: 10%;"></div>
+        <div class="lens-flare" style="bottom: 30%; right: 15%; animation-delay: -2s;"></div>
+        
         <div class="countdown" id="countdown">3</div>
-        <div class="cinematic-text" id="cinematicText">PARABÉNS</div>
-        <div style="margin-top: 20px; color: rgba(255, 255, 255, 0.8); font-family: 'Cinzel', serif; font-size: 1.5rem; text-align: center;">
-            Julieta Pedro Nguluve Canze
+        
+        <!-- Morph Shapes -->
+        <div class="morph-shape" style="top: 15%; left: 5%; animation-delay: -5s;"></div>
+        <div class="morph-shape" style="top: 60%; right: 10%; animation-delay: -10s;"></div>
+        <div class="morph-shape" style="bottom: 20%; left: 20%; animation-delay: -15s;"></div>
+        
+        <div class="cinematic-text" data-text="PARABÉNS" id="cinematicText">PARABÉNS</div>
+        
+        <div class="subtitle-text">
+            Julieta Pedro Nguluve Canze<br>
+            <span style="font-size: 1.2rem; color: var(--secondary-pink); margin-top: 10px; display: block;">
+                20 Anos de Luz e Amor
+            </span>
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
-        <!-- Progress Bar -->
+        <!-- Progress Bar Premium -->
         <div class="progress-bar" id="progressBar"></div>
 
         <!-- Hero Section -->
         <section class="hero-section">
-            <!-- Shapes Morphing -->
-            <div class="morph-shape" style="top: 10%; left: 5%;"></div>
-            <div class="morph-shape" style="top: 70%; right: 10%; animation-delay: -5s;"></div>
-            <div class="morph-shape" style="bottom: 20%; left: 15%; animation-delay: -10s;"></div>
+            <!-- Morph Shapes -->
+            <div class="morph-shape" style="top: 10%; left: 5%; background: linear-gradient(45deg, var(--primary-pink), var(--neon-blue));"></div>
+            <div class="morph-shape" style="top: 70%; right: 10%; background: linear-gradient(45deg, var(--gold), var(--neon-pink)); animation-delay: -8s;"></div>
+            
+            <!-- Lens Flares -->
+            <div class="lens-flare" style="top: 30%; right: 20%;"></div>
             
             <div class="hero-bg"></div>
-            <div class="floating-particles" id="particlesContainer"></div>
             
             <div class="hero-title">
                 <h1 class="hero-name">Julieta</h1>
@@ -743,12 +994,11 @@
             </div>
             
             <div class="age-display">20</div>
-            <div style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem; margin-bottom: 1rem;">anos</div>
             
-            <div style="text-align: center; max-width: 500px; margin-top: 2rem;">
-                <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
-                    Celebrando duas décadas de luz, amor e beleza.<br>
-                    Uma jornada que apenas começou.
+            <div style="text-align: center; max-width: 600px; margin-top: 3rem;">
+                <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.8; font-size: 1.2rem; font-family: 'Cinzel', serif;">
+                    "Celebrando duas décadas de luz, amor e beleza<br>
+                    Uma jornada que apenas começou, mas já ilumina o mundo"
                 </p>
             </div>
         </section>
@@ -756,64 +1006,75 @@
         <!-- Gallery Section -->
         <section class="gallery-section">
             <div class="gallery-title">
-                <h2>Nossas Memórias</h2>
-                <p>Quadros especiais que guardam nossos momentos mais preciosos</p>
+                <h2>Galeria Cinematográfica</h2>
+                <p>Momentos preciosos capturados em quadros dourados que se transformam ao seu toque</p>
             </div>
             
             <div class="photo-frames-container" id="photoFramesContainer">
                 <!-- Quadros serão adicionados dinamicamente via JavaScript -->
             </div>
             
-            <div style="text-align: center; margin-top: 3rem;">
-                <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">
-                    Toque nos quadros para ver as fotos ampliadas<br>
-                    A última foto tem uma surpresa especial
+            <div style="text-align: center; margin-top: 4rem;">
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 1rem; max-width: 500px; margin: 0 auto; line-height: 1.6;">
+                    <span style="color: var(--gold);">💫 Dica:</span> Toque nos quadros para ver as fotos ampliadas.<br>
+                    A última foto contém uma surpresa especial com efeitos visuais!
                 </p>
             </div>
         </section>
 
         <!-- Message Section -->
         <section class="message-section">
-            <!-- Shapes Morphing -->
-            <div class="morph-shape" style="top: 15%; right: 10%;"></div>
-            <div class="morph-shape" style="bottom: 25%; left: 8%; animation-delay: -7s;"></div>
+            <!-- Morph Shapes -->
+            <div class="morph-shape" style="top: 15%; right: 10%; background: linear-gradient(45deg, var(--neon-blue), var(--purple-light));"></div>
+            <div class="morph-shape" style="bottom: 25%; left: 8%; background: linear-gradient(45deg, var(--primary-pink), var(--gold)); animation-delay: -12s;"></div>
             
             <div class="message-container">
-                <h2 class="message-title">Para minha Julieta</h2>
+                <h2 class="message-title">Para Minha Julieta</h2>
                 <div class="message-text" id="animatedMessage">
                     <!-- Texto será animado via GSAP -->
                 </div>
-                <div class="signature">Com todo meu amor</div>
+                <div class="signature">Com todo meu amor, para sempre</div>
             </div>
         </section>
 
         <!-- Final Section -->
         <section class="final-section">
             <div class="fireworks" id="fireworksContainer"></div>
+            
+            <!-- Morph Shapes -->
+            <div class="morph-shape" style="top: 20%; left: 15%; background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue)); animation-delay: -6s;"></div>
+            <div class="morph-shape" style="bottom: 30%; right: 20%; background: linear-gradient(45deg, var(--gold), var(--primary-pink)); animation-delay: -14s;"></div>
+            
             <h2 class="final-title">Feliz 20 Anos!</h2>
-            <div style="text-align: center; max-width: 600px; margin-bottom: 2rem;">
-                <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6; font-size: 1.1rem;">
+            
+            <div class="final-heart">💖</div>
+            
+            <div style="text-align: center; max-width: 700px; margin-bottom: 3rem;">
+                <p style="color: rgba(255, 255, 255, 0.95); line-height: 1.8; font-size: 1.3rem; font-family: 'Cinzel', serif;">
                     Que cada dia dos seus 20 anos seja tão especial<br>
-                    quanto você é para mim.
+                    e brilhante quanto você é para mim e para todos ao seu redor.
                 </p>
             </div>
-            <div style="font-size: 3rem; margin-top: 1rem;">💖</div>
+            
+            <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; text-align: center; margin-top: 2rem;">
+                Celebrando 20 anos em 2024 • Uma criação especial para Julieta
+            </div>
         </section>
 
         <!-- Scroll Indicator -->
         <div class="scroll-indicator" id="scrollIndicator">
-            <span>Deslize para continuar</span>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 5v14M5 12l7 7 7-7"/>
             </svg>
+            <span>Deslize para explorar</span>
         </div>
     </div>
 
-    <!-- Fullscreen Overlay -->
+    <!-- Fullscreen Overlay Premium -->
     <div class="fullscreen-overlay" id="fullscreenOverlay">
         <button class="close-fullscreen" id="closeFullscreen">&times;</button>
         <img class="fullscreen-image" id="fullscreenImage" src="" alt="">
-        <div class="exit-hint">Arraste para baixo para sair</div>
+        <div class="exit-hint">Arraste para baixo ou toque no X para sair</div>
     </div>
 
     <!-- Audio -->
@@ -829,6 +1090,7 @@
         let particles = [];
         let fireworks = [];
         let photoFrames = [];
+        let explosionHearts = [];
 
         // Elementos DOM
         const loadingScreen = document.getElementById('loadingScreen');
@@ -844,7 +1106,6 @@
         const scrollIndicator = document.getElementById('scrollIndicator');
         const progressBar = document.getElementById('progressBar');
         const animatedMessage = document.getElementById('animatedMessage');
-        const particlesContainer = document.getElementById('particlesContainer');
         const fireworksContainer = document.getElementById('fireworksContainer');
         const audio = document.getElementById('backgroundMusic');
 
@@ -861,15 +1122,15 @@ Que este novo ano traga ainda mais alegrias, conquistas e momentos inesquecívei
 
 Feliz aniversário, meu amor.`;
 
-        // Layout dos quadros (posições em porcentagem)
+        // Layout dos quadros (posições em porcentagem) - Mais espalhado e orgânico
         const framePositions = [
-            { top: '10%', left: '5%', rotation: -5 },
-            { top: '15%', left: '35%', rotation: 3 },
-            { top: '25%', left: '65%', rotation: -2 },
-            { top: '45%', left: '10%', rotation: 4 },
-            { top: '50%', left: '45%', rotation: -3 },
-            { top: '60%', left: '75%', rotation: 2 },
-            { top: '75%', left: '25%', rotation: -4 } // Última foto
+            { top: '8%', left: '3%', rotation: -8, scale: 0.9 },
+            { top: '12%', left: '40%', rotation: 5, scale: 1.1 },
+            { top: '20%', left: '70%', rotation: -3, scale: 0.95 },
+            { top: '45%', left: '5%', rotation: 6, scale: 1.05 },
+            { top: '55%', left: '50%', rotation: -7, scale: 0.9 },
+            { top: '65%', left: '80%', rotation: 4, scale: 1.1 },
+            { top: '78%', left: '30%', rotation: -5, scale: 0.95 } // Última foto
         ];
 
         // Inicializar quando a página carregar
@@ -881,12 +1142,12 @@ Feliz aniversário, meu amor.`;
             setTimeout(() => {
                 hideLoadingScreen();
                 startCinematicSequence();
-            }, 2000);
+            }, 3000);
         });
 
         // Iniciar música
         async function startMusic() {
-            audio.volume = 0.3;
+            audio.volume = 0.25;
             try {
                 await audio.play();
             } catch (err) {
@@ -905,7 +1166,8 @@ Feliz aniversário, meu amor.`;
         function hideLoadingScreen() {
             gsap.to(loadingScreen, {
                 opacity: 0,
-                duration: 1,
+                duration: 1.5,
+                ease: 'power2.inOut',
                 onComplete: () => {
                     loadingScreen.style.display = 'none';
                 }
@@ -920,83 +1182,175 @@ Feliz aniversário, meu amor.`;
             // Explosão de texto
             await textExplosion();
             
-            // Explosão de corações
-            await heartExplosion();
+            // Explosão MASSIVA de corações
+            await massiveHeartExplosion();
             
             // Transição para conteúdo principal
             transitionToMainContent();
         }
 
-        // Animação de contagem regressiva
+        // Animação de contagem regressiva com efeitos
         async function countdownAnimation() {
             for (let i = 3; i > 0; i--) {
                 countdownElement.textContent = i;
+                
+                // Criar pequena explosão em cada número
+                createMiniExplosion(window.innerWidth - 100, 100);
+                
                 await new Promise(resolve => {
                     gsap.fromTo(countdownElement,
-                        { scale: 0, opacity: 0 },
                         { 
-                            scale: 1, 
+                            scale: 0, 
+                            opacity: 0,
+                            rotation: -180 
+                        },
+                        { 
+                            scale: 1.5, 
                             opacity: 1, 
+                            rotation: 0,
                             duration: 0.8,
-                            ease: 'back.out(1.7)',
-                            onComplete: resolve
+                            ease: 'back.out(2)',
+                            onComplete: () => {
+                                gsap.to(countdownElement, {
+                                    scale: 1,
+                                    duration: 0.2,
+                                    onComplete: resolve
+                                });
+                            }
                         }
                     );
                 });
-                await new Promise(resolve => setTimeout(resolve, 800));
+                await new Promise(resolve => setTimeout(resolve, 700));
             }
         }
 
         // Explosão de texto
         async function textExplosion() {
-            countdownElement.textContent = "🎉";
+            countdownElement.textContent = "🎬";
             
             // Animação do texto "PARABÉNS"
             gsap.fromTo(cinematicText,
-                { scale: 0.5, opacity: 0 },
-                { scale: 1, opacity: 1, duration: 1, ease: 'elastic.out(1, 0.5)' }
+                { 
+                    scale: 0.3, 
+                    opacity: 0,
+                    y: 100 
+                },
+                { 
+                    scale: 1.2, 
+                    opacity: 1, 
+                    y: 0,
+                    duration: 1.5,
+                    ease: 'elastic.out(1, 0.5)'
+                }
             );
             
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-        // Explosão de corações
-        async function heartExplosion() {
-            // Criar explosão massiva de corações
-            createHeartExplosionEffect();
+            // Efeito de brilho
+            gsap.to(cinematicText, {
+                duration: 0.5,
+                repeat: 5,
+                yoyo: true,
+                ease: 'power1.inOut',
+                filter: 'drop-shadow(0 0 30px var(--primary-pink))'
+            });
             
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 1500));
         }
 
-        // Criar efeito de explosão de corações
-        function createHeartExplosionEffect() {
+        // Explosão MASSIVA de corações
+        async function massiveHeartExplosion() {
+            // Primeira onda - Grande explosão central
+            createCentralExplosion();
+            
+            // Segunda onda - Explosões periféricas
+            setTimeout(() => createPeripheralExplosions(), 500);
+            
+            // Terceira onda - Chuva de corações
+            setTimeout(() => createHeartRain(), 1000);
+            
+            await new Promise(resolve => setTimeout(resolve, 2500));
+        }
+
+        // Criar explosão central
+        function createCentralExplosion() {
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
             
-            // Criar múltiplas ondas de corações
-            for (let wave = 0; wave < 3; wave++) {
+            for (let i = 0; i < 80; i++) {
                 setTimeout(() => {
-                    for (let i = 0; i < 30; i++) {
-                        createExplosionHeart(centerX, centerY, wave * 0.3);
-                    }
-                }, wave * 300);
+                    createExplosionHeart(centerX, centerY, 0, true);
+                }, i * 20);
             }
         }
 
-        // Criar coração individual na explosão
-        function createExplosionHeart(x, y, delay) {
+        // Criar explosões periféricas
+        function createPeripheralExplosions() {
+            const positions = [
+                { x: window.innerWidth * 0.2, y: window.innerHeight * 0.3 },
+                { x: window.innerWidth * 0.8, y: window.innerHeight * 0.3 },
+                { x: window.innerWidth * 0.3, y: window.innerHeight * 0.7 },
+                { x: window.innerWidth * 0.7, y: window.innerHeight * 0.7 }
+            ];
+            
+            positions.forEach((pos, index) => {
+                setTimeout(() => {
+                    for (let i = 0; i < 30; i++) {
+                        createExplosionHeart(pos.x, pos.y, 0, false);
+                    }
+                }, index * 200);
+            });
+        }
+
+        // Criar chuva de corações
+        function createHeartRain() {
+            for (let i = 0; i < 60; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * window.innerWidth;
+                    createFallingHeart(x, -50);
+                }, i * 50);
+            }
+        }
+
+        // Criar coração caindo
+        function createFallingHeart(x, y) {
             const heart = document.createElement('div');
             heart.className = 'explosion-heart';
             heart.innerHTML = '💖';
             heart.style.left = `${x}px`;
             heart.style.top = `${y}px`;
-            heart.style.fontSize = `${Math.random() * 30 + 20}px`;
+            heart.style.fontSize = `${Math.random() * 25 + 20}px`;
+            heart.style.opacity = '0.8';
             
             heartExplosionContainer.appendChild(heart);
+            explosionHearts.push(heart);
+            
+            gsap.to(heart, {
+                y: window.innerHeight + 100,
+                rotation: Math.random() * 360,
+                duration: Math.random() * 3 + 2,
+                ease: 'power1.in',
+                onComplete: () => {
+                    heart.remove();
+                    explosionHearts = explosionHearts.filter(h => h !== heart);
+                }
+            });
+        }
+
+        // Criar coração de explosão
+        function createExplosionHeart(x, y, delay, isCentral) {
+            const heart = document.createElement('div');
+            heart.className = 'explosion-heart';
+            heart.innerHTML = '💖';
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            const size = isCentral ? Math.random() * 40 + 30 : Math.random() * 30 + 20;
+            heart.style.fontSize = `${size}px`;
+            
+            heartExplosionContainer.appendChild(heart);
+            explosionHearts.push(heart);
             
             // Animação GSAP com movimento aleatório
             const angle = Math.random() * Math.PI * 2;
-            const distance = Math.random() * 300 + 200;
+            const distance = isCentral ? Math.random() * 400 + 300 : Math.random() * 250 + 150;
             const targetX = x + Math.cos(angle) * distance;
             const targetY = y + Math.sin(angle) * distance;
             
@@ -1012,10 +1366,22 @@ Feliz aniversário, meu amor.`;
                     gsap.to(heart, {
                         opacity: 0,
                         duration: 0.5,
-                        onComplete: () => heart.remove()
+                        onComplete: () => {
+                            heart.remove();
+                            explosionHearts = explosionHearts.filter(h => h !== heart);
+                        }
                     });
                 }
             });
+        }
+
+        // Criar mini explosão
+        function createMiniExplosion(x, y) {
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    createExplosionHeart(x, y, 0, false);
+                }, i * 50);
+            }
         }
 
         // Transição para conteúdo principal
@@ -1023,8 +1389,8 @@ Feliz aniversário, meu amor.`;
             // Fade out da abertura cinematográfica
             gsap.to(cinematicOpening, {
                 opacity: 0,
-                duration: 2,
-                ease: 'power2.inOut',
+                duration: 2.5,
+                ease: 'power3.inOut',
                 onComplete: () => {
                     cinematicOpening.style.display = 'none';
                     
@@ -1032,7 +1398,7 @@ Feliz aniversário, meu amor.`;
                     mainContent.style.display = 'block';
                     gsap.to(mainContent, {
                         opacity: 1,
-                        duration: 1,
+                        duration: 1.5,
                         onComplete: () => {
                             initMainContent();
                         }
@@ -1051,9 +1417,6 @@ Feliz aniversário, meu amor.`;
             
             // Carregar quadros de fotos
             loadPhotoFrames();
-            
-            // Inicializar partículas flutuantes
-            initFloatingParticles();
             
             // Configurar eventos de fullscreen
             setupFullscreenEvents();
@@ -1081,24 +1444,26 @@ Feliz aniversário, meu amor.`;
                 gsap.from(element, {
                     scrollTrigger: {
                         trigger: element,
-                        start: 'top 80%',
-                        end: 'bottom 20%',
-                        toggleActions: 'play none none reverse'
+                        start: 'top 85%',
+                        end: 'bottom 15%',
+                        toggleActions: 'play none none reverse',
+                        markers: false
                     },
                     opacity: 0,
-                    y: 50,
-                    duration: 1,
-                    delay: i * 0.2
+                    y: 80,
+                    duration: 1.5,
+                    delay: i * 0.3,
+                    ease: 'power3.out'
                 });
             });
             
-            // Efeito parallax no hero
+            // Efeito parallax premium
             gsap.to('.hero-bg', {
                 scrollTrigger: {
-                    scrub: true
+                    scrub: 1.5
                 },
-                scale: 1.2,
-                duration: 1
+                scale: 1.3,
+                duration: 2
             });
         }
 
@@ -1117,13 +1482,13 @@ Feliz aniversário, meu amor.`;
             }
         }
 
-        // Criar quadro de foto
+        // Criar quadro de foto premium
         function createPhotoFrame(index, position, isLastFrame) {
             const frame = document.createElement('div');
             frame.className = 'photo-frame will-change-transform';
             frame.style.top = position.top;
             frame.style.left = position.left;
-            frame.style.transform = `rotate(${position.rotation}deg)`;
+            frame.style.transform = `rotate(${position.rotation}deg) scale(${position.scale})`;
             frame.style.zIndex = index;
             
             const frameInner = document.createElement('div');
@@ -1156,8 +1521,8 @@ Feliz aniversário, meu amor.`;
             const frameBack = document.createElement('div');
             frameBack.className = 'frame-back';
             frameBack.innerHTML = isLastFrame 
-                ? 'Toque para uma surpresa especial 💖'
-                : 'Memória Preciosa';
+                ? '<span style="font-size: 2rem; margin-bottom: 10px; display: block;">💫</span>Surpresa Especial!'
+                : '<span style="font-size: 1.5rem; margin-bottom: 10px; display: block;">✨</span>Memória Preciosa';
             
             frameFront.appendChild(img);
             frameFront.appendChild(frameDecoration);
@@ -1178,17 +1543,32 @@ Feliz aniversário, meu amor.`;
             if (!isTouchDevice()) {
                 frame.addEventListener('mouseenter', () => {
                     gsap.to(frame, {
-                        scale: 1.05,
-                        duration: 0.3,
-                        zIndex: 100
+                        scale: 1.15,
+                        duration: 0.4,
+                        zIndex: 100,
+                        ease: 'back.out(1.7)'
+                    });
+                    
+                    // Efeito de brilho
+                    gsap.to(frame, {
+                        duration: 0.2,
+                        boxShadow: '0 0 40px rgba(212, 175, 55, 0.6)',
+                        ease: 'power2.out'
                     });
                 });
                 
                 frame.addEventListener('mouseleave', () => {
                     gsap.to(frame, {
-                        scale: 1,
-                        duration: 0.3,
-                        zIndex: index
+                        scale: position.scale,
+                        duration: 0.4,
+                        zIndex: index,
+                        ease: 'power2.out'
+                    });
+                    
+                    gsap.to(frame, {
+                        duration: 0.2,
+                        boxShadow: '0 10px 20px rgba(0, 0, 0, 0.5)',
+                        ease: 'power2.out'
                     });
                 });
             }
@@ -1202,16 +1582,17 @@ Feliz aniversário, meu amor.`;
                 gsap.from(frame, {
                     scrollTrigger: {
                         trigger: '.gallery-section',
-                        start: 'top 70%',
-                        end: 'bottom 30%',
-                        toggleActions: 'play none none none'
+                        start: 'top 80%',
+                        end: 'bottom 20%',
+                        toggleActions: 'play none none none',
+                        once: true
                     },
                     opacity: 0,
                     scale: 0,
-                    rotation: index % 2 === 0 ? -180 : 180,
-                    duration: 1,
-                    delay: index * 0.1,
-                    ease: 'back.out(1.7)'
+                    rotation: index % 2 === 0 ? -360 : 360,
+                    duration: 1.2,
+                    delay: index * 0.15,
+                    ease: 'back.out(2)'
                 });
             });
         }
@@ -1219,69 +1600,6 @@ Feliz aniversário, meu amor.`;
         // Detectar dispositivo touch
         function isTouchDevice() {
             return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        }
-
-        // Inicializar partículas flutuantes
-        function initFloatingParticles() {
-            // Criar partículas iniciais
-            for (let i = 0; i < 30; i++) {
-                createFloatingParticle();
-            }
-            
-            // Adicionar novas partículas periodicamente
-            setInterval(() => {
-                if (particles.length < 50) {
-                    createFloatingParticle();
-                }
-            }, 1000);
-        }
-
-        // Criar partícula flutuante
-        function createFloatingParticle() {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            
-            // Posição aleatória
-            const x = Math.random() * window.innerWidth;
-            const y = Math.random() * window.innerHeight;
-            
-            // Tamanho aleatório
-            const size = Math.random() * 3 + 1;
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            
-            // Cor aleatória
-            const colors = ['#ff4081', '#ff79b0', '#ffd700', '#00ffff'];
-            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            
-            particle.style.left = `${x}px`;
-            particle.style.top = `${y}px`;
-            
-            particlesContainer.appendChild(particle);
-            particles.push(particle);
-            
-            // Animar partícula
-            animateParticle(particle);
-        }
-
-        // Animar partícula
-        function animateParticle(particle) {
-            const duration = Math.random() * 10 + 10;
-            const xMove = Math.random() * 100 - 50;
-            const yMove = Math.random() * 100 - 50;
-            
-            gsap.to(particle, {
-                x: `+=${xMove}`,
-                y: `+=${yMove}`,
-                duration: duration,
-                ease: 'sine.inOut',
-                onComplete: () => {
-                    // Remover partícula e criar nova
-                    particle.remove();
-                    particles = particles.filter(p => p !== particle);
-                    createFloatingParticle();
-                }
-            });
         }
 
         // Configurar eventos de fullscreen
@@ -1310,7 +1628,7 @@ Feliz aniversário, meu amor.`;
                 const touchY = e.touches[0].clientY;
                 const deltaY = touchY - touchStartY;
                 
-                if (deltaY > 100) {
+                if (deltaY > 80) {
                     closeFullscreen();
                     isDragging = false;
                 }
@@ -1321,28 +1639,63 @@ Feliz aniversário, meu amor.`;
             });
         }
 
-        // Abrir fullscreen
+        // Abrir fullscreen premium
         function openFullscreen(imageNumber, isLastFrame) {
             isFullscreen = true;
             fullscreenImage.src = `${imageNumber}.jpg`;
             fullscreenOverlay.style.display = 'flex';
             
             gsap.fromTo(fullscreenOverlay,
-                { opacity: 0 },
-                { opacity: 1, duration: 0.5 }
+                { opacity: 0, backdropFilter: 'blur(0px)' },
+                { 
+                    opacity: 1, 
+                    backdropFilter: 'blur(20px)',
+                    duration: 0.8,
+                    ease: 'power2.out'
+                }
             );
             
             gsap.fromTo(fullscreenImage,
-                { scale: 0.8, opacity: 0 },
-                { scale: 1, opacity: 1, duration: 0.7, ease: 'back.out(1.7)' }
+                { scale: 0.7, opacity: 0, rotation: -10 },
+                { 
+                    scale: 1, 
+                    opacity: 1, 
+                    rotation: 0,
+                    duration: 1,
+                    ease: 'back.out(2)'
+                }
             );
             
             // Efeito especial para a última foto
             if (isLastFrame) {
                 setTimeout(() => {
-                    createHeartExplosionEffect();
-                }, 500);
+                    createSpecialEffects();
+                }, 300);
             }
+        }
+
+        // Criar efeitos especiais para última foto
+        function createSpecialEffects() {
+            // Criar explosão de corações
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    createExplosionHeart(
+                        window.innerWidth / 2,
+                        window.innerHeight / 2,
+                        0,
+                        true
+                    );
+                }, i * 30);
+            }
+            
+            // Efeito de brilho na imagem
+            gsap.to(fullscreenImage, {
+                duration: 0.5,
+                repeat: 3,
+                yoyo: true,
+                filter: 'brightness(1.3) drop-shadow(0 0 30px var(--gold))',
+                ease: 'power1.inOut'
+            });
         }
 
         // Fechar fullscreen
@@ -1351,9 +1704,12 @@ Feliz aniversário, meu amor.`;
             
             gsap.to(fullscreenOverlay, {
                 opacity: 0,
+                backdropFilter: 'blur(0px)',
                 duration: 0.5,
+                ease: 'power2.in',
                 onComplete: () => {
                     fullscreenOverlay.style.display = 'none';
+                    fullscreenImage.src = '';
                 }
             });
         }
@@ -1367,58 +1723,67 @@ Feliz aniversário, meu amor.`;
                 
                 gsap.to(progressBar, {
                     scaleX: scrolled / 100,
-                    duration: 0.1
+                    duration: 0.2,
+                    ease: 'power1.out'
                 });
             });
         }
 
-        // Animar mensagem
+        // Animar mensagem com efeito de digitação
         function animateMessage() {
             animatedMessage.innerHTML = '';
-            const letters = messageText.split('');
+            const words = messageText.split(' ');
+            let currentLine = '';
             
-            letters.forEach((letter, i) => {
-                const span = document.createElement('span');
-                span.textContent = letter;
-                span.style.opacity = '0';
-                span.style.display = letter === '\n' ? 'br' : 'inline';
+            words.forEach((word, wordIndex) => {
+                const wordSpan = document.createElement('span');
+                wordSpan.style.opacity = '0';
+                wordSpan.style.display = 'inline';
+                wordSpan.textContent = word + ' ';
                 
-                animatedMessage.appendChild(span);
+                // Adicionar quebra de linha após vírgulas e pontos
+                if (word.includes(',') || word.includes('.') || wordIndex % 8 === 0) {
+                    wordSpan.style.display = 'block';
+                    wordSpan.style.marginBottom = '0.5em';
+                }
                 
-                // Animar cada letra
-                gsap.to(span, {
+                animatedMessage.appendChild(wordSpan);
+                
+                // Animar cada palavra
+                gsap.to(wordSpan, {
                     opacity: 1,
-                    duration: 0.05,
-                    delay: i * 0.03,
+                    duration: 0.3,
+                    delay: wordIndex * 0.05,
                     scrollTrigger: {
                         trigger: '.message-section',
-                        start: 'top 70%',
-                        end: 'bottom 30%',
-                        toggleActions: 'play none none none'
+                        start: 'top 75%',
+                        end: 'bottom 25%',
+                        toggleActions: 'play none none none',
+                        once: true
                     }
                 });
             });
         }
 
-        // Inicializar fogos de artifício
+        // Inicializar fogos de artifício premium
         function initFireworks() {
             // Criar fogos periodicamente
             setInterval(() => {
-                if (fireworks.length < 10) {
+                if (fireworks.length < 8) {
                     createFirework();
                 }
-            }, 2000);
+            }, 1500);
         }
 
-        // Criar fogo de artifício
+        // Criar fogo de artifício premium
         function createFirework() {
             const firework = document.createElement('div');
             firework.className = 'firework';
             
             const x = Math.random() * window.innerWidth;
-            const y = Math.random() * window.innerHeight * 0.5;
+            const y = Math.random() * window.innerHeight * 0.4;
             
-            const colors = ['#ff4081', '#ff79b0', '#ffd700', '#00ffff'];
+            const colors = ['#ff4081', '#ff79b0', '#ffd700', '#00ffff', '#ff00ff'];
             firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
             
             firework.style.left = `${x}px`;
@@ -1433,10 +1798,11 @@ Feliz aniversário, meu amor.`;
 
         // Animar fogo de artifício
         function animateFirework(firework) {
-            const duration = Math.random() * 2 + 1;
+            const duration = Math.random() * 1.5 + 1;
+            const scale = Math.random() * 25 + 20;
             
             gsap.to(firework, {
-                scale: 20,
+                scale: scale,
                 opacity: 0,
                 duration: duration,
                 ease: 'power2.out',
@@ -1455,7 +1821,7 @@ Feliz aniversário, meu amor.`;
             const x = rect.left + rect.width / 2;
             const y = rect.top + rect.height / 2;
             
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 40; i++) {
                 createParticle(x, y);
             }
         }
@@ -1465,22 +1831,23 @@ Feliz aniversário, meu amor.`;
             const particle = document.createElement('div');
             particle.className = 'particle';
             
-            const size = Math.random() * 4 + 2;
+            const size = Math.random() * 5 + 3;
             particle.style.width = `${size}px`;
             particle.style.height = `${size}px`;
             
-            const colors = ['#ff4081', '#ff79b0', '#ffd700', '#00ffff'];
+            const colors = ['#ff4081', '#ff79b0', '#ffd700', '#00ffff', '#ff00ff'];
             particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
             
             particle.style.left = `${x}px`;
             particle.style.top = `${y}px`;
             
-            particlesContainer.appendChild(particle);
+            // Adicionar ao body
+            document.body.appendChild(particle);
             
             // Animar explosão
             gsap.to(particle, {
-                x: `+=${Math.random() * 200 - 100}`,
-                y: `+=${Math.random() * 200 - 100}`,
+                x: `+=${Math.random() * 300 - 150}`,
+                y: `+=${Math.random() * 300 - 150}`,
                 opacity: 0,
                 duration: 2,
                 ease: 'power2.out',
@@ -1494,10 +1861,16 @@ Feliz aniversário, meu amor.`;
                 const scrolled = window.pageYOffset;
                 const viewportHeight = window.innerHeight;
                 
-                if (scrolled > viewportHeight * 0.5) {
-                    scrollIndicator.style.opacity = '0';
+                if (scrolled > viewportHeight * 0.3) {
+                    gsap.to(scrollIndicator, {
+                        opacity: 0,
+                        duration: 0.5
+                    });
                 } else {
-                    scrollIndicator.style.opacity = '1';
+                    gsap.to(scrollIndicator, {
+                        opacity: 1,
+                        duration: 0.5
+                    });
                 }
             });
             
@@ -1506,7 +1879,7 @@ Feliz aniversário, meu amor.`;
                 const scrolled = window.pageYOffset;
                 const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
                 
-                if (scrolled > totalHeight * 0.8) {
+                if (scrolled > totalHeight * 0.7) {
                     scrollIndicator.style.display = 'none';
                 } else {
                     scrollIndicator.style.display = 'flex';
@@ -1525,14 +1898,22 @@ Feliz aniversário, meu amor.`;
 
         // Redimensionar
         window.addEventListener('resize', () => {
-            particles.forEach(particle => particle.remove());
-            particles = [];
-            
+            // Limpar fogos de artifício
             fireworks.forEach(firework => firework.remove());
             fireworks = [];
             
-            initFloatingParticles();
+            // Limpar corações de explosão
+            explosionHearts.forEach(heart => heart.remove());
+            explosionHearts = [];
+            
+            // Reiniciar fogos
             initFireworks();
+        });
+
+        // Limpar elementos quando a página for fechada
+        window.addEventListener('beforeunload', () => {
+            fireworks.forEach(firework => firework.remove());
+            explosionHearts.forEach(heart => heart.remove());
         });
     </script>
 </body>
