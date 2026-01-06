@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -12,6 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js"></script>
     
     <!-- CSS Personalizado -->
     <style>
@@ -23,6 +25,8 @@
             --purple-light: #2d1b69;
             --neon-pink: #ff00ff;
             --neon-blue: #00ffff;
+            --frame-gold: #d4af37;
+            --frame-silver: #c0c0c0;
         }
         
         * {
@@ -138,6 +142,7 @@
             background-clip: text;
             position: relative;
             overflow: hidden;
+            margin-bottom: 2rem;
         }
         
         .cinematic-text::after {
@@ -169,6 +174,24 @@
             font-weight: bold;
             color: var(--primary-pink);
             font-family: 'Montserrat', sans-serif;
+        }
+        
+        /* Explosão de Corações */
+        .heart-explosion-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9997;
+        }
+        
+        .explosion-heart {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0;
+            pointer-events: none;
         }
         
         /* Main Content */
@@ -248,121 +271,170 @@
             margin: 1rem 0;
         }
         
-        .heart-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--primary-pink);
-            transform: rotate(45deg);
-            position: relative;
-            margin: 2rem auto;
-            animation: heartbeat 1.5s ease-in-out infinite;
-        }
-        
-        .heart-icon:before,
-        .heart-icon:after {
-            content: '';
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: var(--primary-pink);
-            border-radius: 50%;
-        }
-        
-        .heart-icon:before {
-            top: -30px;
-            left: 0;
-        }
-        
-        .heart-icon:after {
-            top: 0;
-            left: 30px;
-        }
-        
-        @keyframes heartbeat {
-            0%, 100% { transform: rotate(45deg) scale(1); }
-            25% { transform: rotate(45deg) scale(1.1); }
-            50% { transform: rotate(45deg) scale(1); }
-            75% { transform: rotate(45deg) scale(1.05); }
-        }
-        
-        /* Horizontal Gallery */
+        /* Quadros de Fotos */
         .gallery-section {
             min-height: 100vh;
             position: relative;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #0a0617 0%, var(--purple-dark) 100%);
             overflow: hidden;
         }
         
-        .gallery-container {
+        .gallery-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .gallery-title h2 {
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(45deg, var(--primary-pink), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .gallery-title p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+        
+        .photo-frames-container {
             position: relative;
             width: 100%;
-            height: 100vh;
-            display: flex;
-            overflow-x: auto;
-            overflow-y: hidden;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
+            min-height: 80vh;
+            margin: 0 auto;
         }
         
-        .gallery-container::-webkit-scrollbar {
-            display: none;
+        .photo-frame {
+            position: absolute;
+            width: 150px;
+            height: 200px;
+            perspective: 1000px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
         }
         
-        .gallery-slide {
-            flex: 0 0 100vw;
-            height: 100vh;
-            scroll-snap-align: start;
+        .photo-frame:hover {
+            transform: scale(1.05);
+            z-index: 10 !important;
+        }
+        
+        .frame-inner {
+            width: 100%;
+            height: 100%;
             position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .photo-frame:hover .frame-inner {
+            transform: rotateY(10deg) rotateX(5deg);
+        }
+        
+        .frame-front, .frame-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .frame-front {
+            background: var(--frame-gold);
+            padding: 12px;
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                0 0 30px rgba(212, 175, 55, 0.3),
+                inset 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .frame-back {
+            background: linear-gradient(135deg, #2d1b69, #1a0b2e);
+            transform: rotateY(180deg);
             display: flex;
             justify-content: center;
             align-items: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: var(--gold);
+            text-align: center;
             padding: 20px;
         }
         
-        .slide-image {
-            width: 90%;
-            height: 70%;
+        .photo-img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
-            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.5s ease;
         }
         
-        .slide-image:hover {
-            transform: scale(1.02);
+        .photo-frame:hover .photo-img {
+            transform: scale(1.05);
         }
         
-        .slide-number {
+        .frame-decoration {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        .corner-tl {
+            top: 8px;
+            left: 8px;
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .corner-tr {
+            top: 8px;
+            right: 8px;
+            border-left: none;
+            border-bottom: none;
+        }
+        
+        .corner-bl {
+            bottom: 8px;
+            left: 8px;
+            border-right: none;
+            border-top: none;
+        }
+        
+        .corner-br {
+            bottom: 8px;
+            right: 8px;
+            border-left: none;
+            border-top: none;
+        }
+        
+        .frame-number {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
             background: rgba(0, 0, 0, 0.7);
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            backdrop-filter: blur(10px);
-        }
-        
-        .slide-instruction {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            backdrop-filter: blur(10px);
-            animation: pulse 2s infinite;
-            white-space: nowrap;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
         }
         
         /* Fullscreen Overlay */
@@ -372,7 +444,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.98);
             z-index: 9999;
             display: none;
             justify-content: center;
@@ -563,15 +635,30 @@
             z-index: 1000;
         }
         
+        /* Morph Animation */
+        .morph-shape {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, var(--primary-pink), var(--purple-light));
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            opacity: 0.1;
+            animation: morph 15s infinite linear;
+            pointer-events: none;
+        }
+        
+        @keyframes morph {
+            0%, 100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+            25% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+            75% { border-radius: 60% 30% 40% 70% / 60% 50% 40% 60%; }
+        }
+        
         /* Mobile Optimizations */
         @media (max-width: 768px) {
-            .gallery-slide {
-                padding: 10px;
-            }
-            
-            .slide-image {
-                width: 95%;
-                height: 65%;
+            .photo-frame {
+                width: 120px;
+                height: 160px;
             }
             
             .message-container {
@@ -582,6 +669,18 @@
             .scroll-indicator {
                 font-size: 0.7rem;
                 padding: 8px 15px;
+            }
+            
+            .morph-shape {
+                width: 150px;
+                height: 150px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .photo-frame {
+                width: 100px;
+                height: 140px;
             }
         }
         
@@ -605,9 +704,12 @@
     <div class="loading-screen" id="loadingScreen">
         <div class="loader"></div>
         <div style="color: var(--primary-pink); font-family: 'Montserrat', sans-serif; font-size: 1.2rem; margin-top: 10px;">
-            Carregando sua surpresa...
+            Preparando sua experiência especial...
         </div>
     </div>
+
+    <!-- Container para Explosão de Corações -->
+    <div class="heart-explosion-container" id="heartExplosionContainer"></div>
 
     <!-- Cinematic Opening -->
     <div class="cinematic-opening" id="cinematicOpening">
@@ -627,6 +729,11 @@
 
         <!-- Hero Section -->
         <section class="hero-section">
+            <!-- Shapes Morphing -->
+            <div class="morph-shape" style="top: 10%; left: 5%;"></div>
+            <div class="morph-shape" style="top: 70%; right: 10%; animation-delay: -5s;"></div>
+            <div class="morph-shape" style="bottom: 20%; left: 15%; animation-delay: -10s;"></div>
+            
             <div class="hero-bg"></div>
             <div class="floating-particles" id="particlesContainer"></div>
             
@@ -638,8 +745,6 @@
             <div class="age-display">20</div>
             <div style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem; margin-bottom: 1rem;">anos</div>
             
-            <div class="heart-icon"></div>
-            
             <div style="text-align: center; max-width: 500px; margin-top: 2rem;">
                 <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
                     Celebrando duas décadas de luz, amor e beleza.<br>
@@ -650,14 +755,29 @@
 
         <!-- Gallery Section -->
         <section class="gallery-section">
-            <div class="gallery-container" id="galleryContainer">
-                <!-- Slides serão adicionados via JavaScript -->
+            <div class="gallery-title">
+                <h2>Nossas Memórias</h2>
+                <p>Quadros especiais que guardam nossos momentos mais preciosos</p>
             </div>
-            <div class="slide-instruction">Deslize para os lados • Toque para ampliar</div>
+            
+            <div class="photo-frames-container" id="photoFramesContainer">
+                <!-- Quadros serão adicionados dinamicamente via JavaScript -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">
+                    Toque nos quadros para ver as fotos ampliadas<br>
+                    A última foto tem uma surpresa especial
+                </p>
+            </div>
         </section>
 
         <!-- Message Section -->
         <section class="message-section">
+            <!-- Shapes Morphing -->
+            <div class="morph-shape" style="top: 15%; right: 10%;"></div>
+            <div class="morph-shape" style="bottom: 25%; left: 8%; animation-delay: -7s;"></div>
+            
             <div class="message-container">
                 <h2 class="message-title">Para minha Julieta</h2>
                 <div class="message-text" id="animatedMessage">
@@ -677,7 +797,7 @@
                     quanto você é para mim.
                 </p>
             </div>
-            <div class="heart-icon" style="width: 40px; height: 40px;"></div>
+            <div style="font-size: 3rem; margin-top: 1rem;">💖</div>
         </section>
 
         <!-- Scroll Indicator -->
@@ -708,14 +828,16 @@
         let isFullscreen = false;
         let particles = [];
         let fireworks = [];
+        let photoFrames = [];
 
         // Elementos DOM
         const loadingScreen = document.getElementById('loadingScreen');
         const cinematicOpening = document.getElementById('cinematicOpening');
+        const heartExplosionContainer = document.getElementById('heartExplosionContainer');
         const countdownElement = document.getElementById('countdown');
         const cinematicText = document.getElementById('cinematicText');
         const mainContent = document.getElementById('mainContent');
-        const galleryContainer = document.getElementById('galleryContainer');
+        const photoFramesContainer = document.getElementById('photoFramesContainer');
         const fullscreenOverlay = document.getElementById('fullscreenOverlay');
         const fullscreenImage = document.getElementById('fullscreenImage');
         const closeFullscreenBtn = document.getElementById('closeFullscreen');
@@ -738,6 +860,17 @@ Nestas duas décadas, você já realizou tanto e ainda tem um universo inteiro p
 Que este novo ano traga ainda mais alegrias, conquistas e momentos inesquecíveis.
 
 Feliz aniversário, meu amor.`;
+
+        // Layout dos quadros (posições em porcentagem)
+        const framePositions = [
+            { top: '10%', left: '5%', rotation: -5 },
+            { top: '15%', left: '35%', rotation: 3 },
+            { top: '25%', left: '65%', rotation: -2 },
+            { top: '45%', left: '10%', rotation: 4 },
+            { top: '50%', left: '45%', rotation: -3 },
+            { top: '60%', left: '75%', rotation: 2 },
+            { top: '75%', left: '25%', rotation: -4 } // Última foto
+        ];
 
         // Inicializar quando a página carregar
         document.addEventListener('DOMContentLoaded', async () => {
@@ -787,11 +920,11 @@ Feliz aniversário, meu amor.`;
             // Explosão de texto
             await textExplosion();
             
+            // Explosão de corações
+            await heartExplosion();
+            
             // Transição para conteúdo principal
             transitionToMainContent();
-            
-            // Criar explosão inicial
-            createInitialExplosion();
         }
 
         // Animação de contagem regressiva
@@ -824,21 +957,65 @@ Feliz aniversário, meu amor.`;
                 { scale: 1, opacity: 1, duration: 1, ease: 'elastic.out(1, 0.5)' }
             );
             
-            // Criar partículas ao redor do texto
-            createTextParticles();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        // Explosão de corações
+        async function heartExplosion() {
+            // Criar explosão massiva de corações
+            createHeartExplosionEffect();
             
             await new Promise(resolve => setTimeout(resolve, 2000));
         }
 
-        // Criar partículas ao redor do texto
-        function createTextParticles() {
-            const rect = cinematicText.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
+        // Criar efeito de explosão de corações
+        function createHeartExplosionEffect() {
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
             
-            for (let i = 0; i < 50; i++) {
-                createParticle(centerX, centerY);
+            // Criar múltiplas ondas de corações
+            for (let wave = 0; wave < 3; wave++) {
+                setTimeout(() => {
+                    for (let i = 0; i < 30; i++) {
+                        createExplosionHeart(centerX, centerY, wave * 0.3);
+                    }
+                }, wave * 300);
             }
+        }
+
+        // Criar coração individual na explosão
+        function createExplosionHeart(x, y, delay) {
+            const heart = document.createElement('div');
+            heart.className = 'explosion-heart';
+            heart.innerHTML = '💖';
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            heart.style.fontSize = `${Math.random() * 30 + 20}px`;
+            
+            heartExplosionContainer.appendChild(heart);
+            
+            // Animação GSAP com movimento aleatório
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * 300 + 200;
+            const targetX = x + Math.cos(angle) * distance;
+            const targetY = y + Math.sin(angle) * distance;
+            
+            gsap.to(heart, {
+                x: targetX - x,
+                y: targetY - y,
+                opacity: 1,
+                rotation: Math.random() * 720,
+                duration: 2,
+                delay: delay,
+                ease: 'power2.out',
+                onComplete: () => {
+                    gsap.to(heart, {
+                        opacity: 0,
+                        duration: 0.5,
+                        onComplete: () => heart.remove()
+                    });
+                }
+            });
         }
 
         // Transição para conteúdo principal
@@ -864,18 +1041,6 @@ Feliz aniversário, meu amor.`;
             });
         }
 
-        // Criar explosão inicial
-        function createInitialExplosion() {
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
-            
-            for (let i = 0; i < 100; i++) {
-                setTimeout(() => {
-                    createParticle(centerX, centerY);
-                }, i * 20);
-            }
-        }
-
         // Inicializar conteúdo principal
         function initMainContent() {
             // Inicializar GSAP ScrollTrigger
@@ -884,8 +1049,8 @@ Feliz aniversário, meu amor.`;
             // Configurar animações de scroll
             setupScrollAnimations();
             
-            // Carregar galeria
-            loadGallery();
+            // Carregar quadros de fotos
+            loadPhotoFrames();
             
             // Inicializar partículas flutuantes
             initFloatingParticles();
@@ -904,6 +1069,9 @@ Feliz aniversário, meu amor.`;
             
             // Configurar indicador de scroll
             setupScrollIndicator();
+            
+            // Animar entrada dos quadros
+            animateFramesEntrance();
         }
 
         // Configurar animações de scroll
@@ -934,70 +1102,123 @@ Feliz aniversário, meu amor.`;
             });
         }
 
-        // Carregar galeria
-        function loadGallery() {
-            galleryContainer.innerHTML = '';
+        // Carregar quadros de fotos
+        function loadPhotoFrames() {
+            photoFramesContainer.innerHTML = '';
+            photoFrames = [];
             
             for (let i = 1; i <= TOTAL_IMAGES; i++) {
-                const slide = document.createElement('div');
-                slide.className = 'gallery-slide';
+                const position = framePositions[i - 1];
+                const isLastFrame = i === TOTAL_IMAGES;
                 
-                const img = document.createElement('img');
-                img.className = 'slide-image';
-                img.src = `${i}.jpg`;
-                img.alt = `Foto ${i} da Julieta`;
-                img.loading = 'lazy';
+                const frame = createPhotoFrame(i, position, isLastFrame);
+                photoFramesContainer.appendChild(frame);
+                photoFrames.push(frame);
+            }
+        }
+
+        // Criar quadro de foto
+        function createPhotoFrame(index, position, isLastFrame) {
+            const frame = document.createElement('div');
+            frame.className = 'photo-frame will-change-transform';
+            frame.style.top = position.top;
+            frame.style.left = position.left;
+            frame.style.transform = `rotate(${position.rotation}deg)`;
+            frame.style.zIndex = index;
+            
+            const frameInner = document.createElement('div');
+            frameInner.className = 'frame-inner';
+            
+            const frameFront = document.createElement('div');
+            frameFront.className = 'frame-front';
+            
+            const img = document.createElement('img');
+            img.className = 'photo-img';
+            img.src = `${index}.jpg`;
+            img.alt = `Foto ${index} da Julieta`;
+            img.loading = 'lazy';
+            
+            const frameDecoration = document.createElement('div');
+            frameDecoration.className = 'frame-decoration';
+            
+            // Adicionar cantos decorativos
+            const corners = ['tl', 'tr', 'bl', 'br'];
+            corners.forEach(corner => {
+                const cornerDiv = document.createElement('div');
+                cornerDiv.className = `corner corner-${corner}`;
+                frameDecoration.appendChild(cornerDiv);
+            });
+            
+            const frameNumber = document.createElement('div');
+            frameNumber.className = 'frame-number';
+            frameNumber.textContent = index;
+            
+            const frameBack = document.createElement('div');
+            frameBack.className = 'frame-back';
+            frameBack.innerHTML = isLastFrame 
+                ? 'Toque para uma surpresa especial 💖'
+                : 'Memória Preciosa';
+            
+            frameFront.appendChild(img);
+            frameFront.appendChild(frameDecoration);
+            frameFront.appendChild(frameNumber);
+            
+            frameInner.appendChild(frameFront);
+            frameInner.appendChild(frameBack);
+            frame.appendChild(frameInner);
+            
+            // Evento de clique para fullscreen
+            frame.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentImageIndex = index;
+                openFullscreen(index, isLastFrame);
+            });
+            
+            // Efeito hover para desktop
+            if (!isTouchDevice()) {
+                frame.addEventListener('mouseenter', () => {
+                    gsap.to(frame, {
+                        scale: 1.05,
+                        duration: 0.3,
+                        zIndex: 100
+                    });
+                });
                 
-                const number = document.createElement('div');
-                number.className = 'slide-number';
-                number.textContent = `${i}/${TOTAL_IMAGES}`;
-                
-                slide.appendChild(img);
-                slide.appendChild(number);
-                galleryContainer.appendChild(slide);
-                
-                // Evento de clique para fullscreen
-                img.addEventListener('click', () => {
-                    openFullscreen(i);
+                frame.addEventListener('mouseleave', () => {
+                    gsap.to(frame, {
+                        scale: 1,
+                        duration: 0.3,
+                        zIndex: index
+                    });
                 });
             }
             
-            // Configurar rolagem suave para a galeria
-            setupGalleryScroll();
+            return frame;
         }
 
-        // Configurar rolagem da galeria
-        function setupGalleryScroll() {
-            let isScrolling;
-            
-            galleryContainer.addEventListener('scroll', () => {
-                clearTimeout(isScrolling);
-                
-                isScrolling = setTimeout(() => {
-                    const scrollPosition = galleryContainer.scrollLeft;
-                    const slideWidth = galleryContainer.clientWidth;
-                    currentImageIndex = Math.round(scrollPosition / slideWidth);
-                    
-                    // Se for a última imagem, mostrar dica para fullscreen
-                    if (currentImageIndex === TOTAL_IMAGES - 1) {
-                        showFullscreenHint();
-                    }
-                }, 150);
+        // Animação de entrada dos quadros
+        function animateFramesEntrance() {
+            photoFrames.forEach((frame, index) => {
+                gsap.from(frame, {
+                    scrollTrigger: {
+                        trigger: '.gallery-section',
+                        start: 'top 70%',
+                        end: 'bottom 30%',
+                        toggleActions: 'play none none none'
+                    },
+                    opacity: 0,
+                    scale: 0,
+                    rotation: index % 2 === 0 ? -180 : 180,
+                    duration: 1,
+                    delay: index * 0.1,
+                    ease: 'back.out(1.7)'
+                });
             });
         }
 
-        // Mostrar dica de fullscreen
-        function showFullscreenHint() {
-            const hint = document.createElement('div');
-            hint.className = 'slide-instruction';
-            hint.textContent = 'Toque na imagem para ver em tela cheia';
-            hint.style.bottom = '60px';
-            
-            document.querySelector('.gallery-section').appendChild(hint);
-            
-            setTimeout(() => {
-                hint.remove();
-            }, 3000);
+        // Detectar dispositivo touch
+        function isTouchDevice() {
+            return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
         }
 
         // Inicializar partículas flutuantes
@@ -1063,34 +1284,6 @@ Feliz aniversário, meu amor.`;
             });
         }
 
-        // Criar partícula única
-        function createParticle(x, y) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            
-            const size = Math.random() * 4 + 2;
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            
-            const colors = ['#ff4081', '#ff79b0', '#ffd700', '#00ffff'];
-            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            
-            particle.style.left = `${x}px`;
-            particle.style.top = `${y}px`;
-            
-            particlesContainer.appendChild(particle);
-            
-            // Animar explosão
-            gsap.to(particle, {
-                x: `+=${Math.random() * 200 - 100}`,
-                y: `+=${Math.random() * 200 - 100}`,
-                opacity: 0,
-                duration: 2,
-                ease: 'power2.out',
-                onComplete: () => particle.remove()
-            });
-        }
-
         // Configurar eventos de fullscreen
         function setupFullscreenEvents() {
             closeFullscreenBtn.addEventListener('click', closeFullscreen);
@@ -1104,25 +1297,32 @@ Feliz aniversário, meu amor.`;
             
             // Sair do fullscreen arrastando para baixo
             let touchStartY = 0;
+            let isDragging = false;
             
             fullscreenOverlay.addEventListener('touchstart', (e) => {
                 touchStartY = e.touches[0].clientY;
+                isDragging = true;
             });
             
             fullscreenOverlay.addEventListener('touchmove', (e) => {
-                if (!isFullscreen) return;
+                if (!isDragging || !isFullscreen) return;
                 
                 const touchY = e.touches[0].clientY;
                 const deltaY = touchY - touchStartY;
                 
                 if (deltaY > 100) {
                     closeFullscreen();
+                    isDragging = false;
                 }
+            });
+            
+            fullscreenOverlay.addEventListener('touchend', () => {
+                isDragging = false;
             });
         }
 
         // Abrir fullscreen
-        function openFullscreen(imageNumber) {
+        function openFullscreen(imageNumber, isLastFrame) {
             isFullscreen = true;
             fullscreenImage.src = `${imageNumber}.jpg`;
             fullscreenOverlay.style.display = 'flex';
@@ -1136,6 +1336,13 @@ Feliz aniversário, meu amor.`;
                 { scale: 0.8, opacity: 0 },
                 { scale: 1, opacity: 1, duration: 0.7, ease: 'back.out(1.7)' }
             );
+            
+            // Efeito especial para a última foto
+            if (isLastFrame) {
+                setTimeout(() => {
+                    createHeartExplosionEffect();
+                }, 500);
+            }
         }
 
         // Fechar fullscreen
@@ -1251,6 +1458,34 @@ Feliz aniversário, meu amor.`;
             for (let i = 0; i < 30; i++) {
                 createParticle(x, y);
             }
+        }
+
+        // Criar partícula para explosão
+        function createParticle(x, y) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            const size = Math.random() * 4 + 2;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            const colors = ['#ff4081', '#ff79b0', '#ffd700', '#00ffff'];
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            
+            particlesContainer.appendChild(particle);
+            
+            // Animar explosão
+            gsap.to(particle, {
+                x: `+=${Math.random() * 200 - 100}`,
+                y: `+=${Math.random() * 200 - 100}`,
+                opacity: 0,
+                duration: 2,
+                ease: 'power2.out',
+                onComplete: () => particle.remove()
+            });
         }
 
         // Configurar indicador de scroll
