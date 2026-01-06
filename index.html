@@ -2,95 +2,39 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Feliz 20 Anos, Julieta ❤️</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>20 Anos - Julieta ❤️</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'primary-pink': '#ff6b9d',
-                        'soft-pink': '#ffa8c2',
-                        'deep-purple': '#1a0b2e',
-                        'medium-purple': '#2d1b69',
-                        'gold': '#ffd166',
-                        'neon-pink': '#ff4081'
-                    },
-                    fontFamily: {
-                        'playfair': ['Playfair Display', 'serif'],
-                        'inter': ['Inter', 'sans-serif'],
-                        'cursive': ['Dancing Script', 'cursive'],
-                        'cinzel': ['Cinzel', 'serif']
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 2s ease-out',
-                        'slide-up': 'slideUp 1s ease-out',
-                        'heartbeat': 'heartbeat 1.5s ease-in-out infinite',
-                        'zoom-out': 'zoomOut 1s ease-out forwards',
-                        'text-glitch': 'textGlitch 2s linear infinite',
-                        'pulse-soft': 'pulseSoft 3s ease-in-out infinite'
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: 0 },
-                            '100%': { opacity: 1 }
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(100px)', opacity: 0 },
-                            '100%': { transform: 'translateY(0)', opacity: 1 }
-                        },
-                        heartbeat: {
-                            '0%': { transform: 'scale(1)' },
-                            '14%': { transform: 'scale(1.3)' },
-                            '28%': { transform: 'scale(1)' },
-                            '42%': { transform: 'scale(1.3)' },
-                            '70%': { transform: 'scale(1)' }
-                        },
-                        zoomOut: {
-                            '0%': { transform: 'scale(0.95)', opacity: 0 },
-                            '100%': { transform: 'scale(1)', opacity: 1 }
-                        },
-                        textGlitch: {
-                            '0%, 100%': { transform: 'translate(0)', opacity: 1 },
-                            '92%': { transform: 'translate(0)', opacity: 1 },
-                            '93%': { transform: 'translate(-2px, 2px)', opacity: 0.8 },
-                            '94%': { transform: 'translate(2px, -2px)', opacity: 0.8 },
-                            '95%': { transform: 'translate(-2px, -2px)', opacity: 0.8 },
-                            '96%': { transform: 'translate(2px, 2px)', opacity: 0.8 },
-                            '97%': { transform: 'translate(0)', opacity: 1 }
-                        },
-                        pulseSoft: {
-                            '0%, 100%': { opacity: 1 },
-                            '50%': { opacity: 0.7 }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&family=Dancing+Script:wght@700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Fontes Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&family=Dancing+Script:wght@700&family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
     
-    <!-- Custom CSS -->
+    <!-- CSS Personalizado -->
     <style>
         :root {
-            --primary-pink: #ff6b9d;
-            --soft-pink: #ffa8c2;
-            --deep-purple: #1a0b2e;
-            --gold: #ffd166;
+            --primary-pink: #ff4081;
+            --secondary-pink: #ff79b0;
+            --gold: #ffd700;
+            --purple-dark: #1a0b2e;
+            --purple-light: #2d1b69;
+            --neon-pink: #ff00ff;
+            --neon-blue: #00ffff;
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
         }
         
         body {
@@ -98,26 +42,55 @@
             background: #000;
             color: white;
             overflow-x: hidden;
+            touch-action: pan-y;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
-        .text-gradient {
-            background: linear-gradient(45deg, var(--primary-pink), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .cinematic-black {
+        /* Loading Screen */
+        .loading-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: #000;
-            z-index: 99999;
+            z-index: 9999;
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--primary-pink);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Cinematic Opening */
+        .cinematic-opening {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9998;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 1s;
         }
         
         .film-grain {
@@ -126,585 +99,1205 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc0IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWx0ZXI9InVybCgjYSkiIG9wYWNpdHk9Ii4wMiIvPjwvc3ZnPg==');
-            opacity: 0.15;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc0IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWx0ZXI9InVybCgjYSkiIG9wYWNpdHk9Ii4wMyIvPjwvc3ZnPg==');
+            opacity: 0.08;
             pointer-events: none;
         }
         
-        .vignette {
+        .scanlines {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.9) 100%);
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 0, 0, 0.2) 50%
+            );
+            background-size: 100% 4px;
             pointer-events: none;
+            animation: scanlines 8s linear infinite;
         }
         
-        .fullscreen-slide {
-            position: fixed !important;
-            top: 0;
-            left: 0;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: 9999 !important;
-            background: #000 !important;
-            margin: 0 !important;
-            border-radius: 0 !important;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
         }
         
-        .fullscreen-slide img {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: contain !important;
-        }
-        
-        .slide-exit-hint {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255,255,255,0.7);
-            font-size: 14px;
+        .cinematic-text {
+            font-size: clamp(2rem, 8vw, 5rem);
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
             text-align: center;
-            background: rgba(0,0,0,0.5);
-            padding: 10px 20px;
-            border-radius: 20px;
-            opacity: 0;
-            animation: fadeInOut 4s infinite;
+            color: transparent;
+            background: linear-gradient(45deg, var(--primary-pink), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            position: relative;
+            overflow: hidden;
         }
         
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
+        .cinematic-text::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                transparent 20%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 80%
+            );
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(25deg); }
+            100% { transform: translateX(100%) rotate(25deg); }
         }
         
         .countdown {
             position: absolute;
             top: 20px;
             right: 20px;
-            font-size: 24px;
+            font-size: 2rem;
             font-weight: bold;
             color: var(--primary-pink);
+            font-family: 'Montserrat', sans-serif;
         }
         
-        .heart-trail {
-            position: absolute;
-            font-size: 24px;
+        /* Main Content */
+        .main-content {
+            display: none;
             opacity: 0;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, var(--purple-dark) 0%, #000 70%);
+            z-index: -1;
+        }
+        
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--primary-pink);
+            border-radius: 50%;
             pointer-events: none;
         }
         
-        .cinematic-title {
-            font-size: 8vw;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.3em;
+        .hero-title {
             text-align: center;
             margin-bottom: 2rem;
         }
         
+        .hero-name {
+            font-size: clamp(2.5rem, 10vw, 4.5rem);
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--primary-pink), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 5vw, 1.8rem);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+            margin-bottom: 1rem;
+        }
+        
+        .age-display {
+            font-size: clamp(4rem, 15vw, 8rem);
+            font-weight: 900;
+            color: var(--gold);
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            margin: 1rem 0;
+        }
+        
+        .heart-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-pink);
+            transform: rotate(45deg);
+            position: relative;
+            margin: 2rem auto;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+        
+        .heart-icon:before,
+        .heart-icon:after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-pink);
+            border-radius: 50%;
+        }
+        
+        .heart-icon:before {
+            top: -30px;
+            left: 0;
+        }
+        
+        .heart-icon:after {
+            top: 0;
+            left: 30px;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: rotate(45deg) scale(1); }
+            25% { transform: rotate(45deg) scale(1.1); }
+            50% { transform: rotate(45deg) scale(1); }
+            75% { transform: rotate(45deg) scale(1.05); }
+        }
+        
+        /* Horizontal Gallery */
+        .gallery-section {
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gallery-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .gallery-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .gallery-slide {
+            flex: 0 0 100vw;
+            height: 100vh;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .slide-image {
+            width: 90%;
+            height: 70%;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .slide-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .slide-number {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .slide-instruction {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            animation: pulse 2s infinite;
+            white-space: nowrap;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        /* Fullscreen Overlay */
+        .fullscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .fullscreen-image {
+            max-width: 95%;
+            max-height: 80%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 0 100px rgba(255, 64, 129, 0.3);
+        }
+        
+        .close-fullscreen {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .exit-hint {
+            position: absolute;
+            bottom: 40px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            animation: fadeInOut 3s infinite;
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        /* Message Section */
+        .message-section {
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            background: linear-gradient(to bottom, #000, var(--purple-dark));
+            overflow: hidden;
+        }
+        
+        .message-container {
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .message-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-pink), var(--gold));
+        }
+        
+        .message-title {
+            font-size: clamp(2rem, 8vw, 3rem);
+            font-family: 'Dancing Script', cursive;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary-pink);
+        }
+        
+        .message-text {
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .signature {
+            text-align: right;
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(1.5rem, 6vw, 2rem);
+            color: var(--gold);
+            margin-top: 2rem;
+        }
+        
+        /* Final Section */
+        .final-section {
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: radial-gradient(circle at center, var(--purple-dark) 0%, #000 70%);
+        }
+        
+        .final-title {
+            font-size: clamp(2.5rem, 10vw, 4rem);
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, var(--primary-pink), var(--gold), var(--neon-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: gradientShift 3s infinite alternate;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        
+        .fireworks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-pink);
+            border-radius: 50%;
+        }
+        
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            animation: bounce 2s infinite;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-pink), var(--gold));
+            transform-origin: 0%;
+            z-index: 1000;
+        }
+        
+        /* Mobile Optimizations */
         @media (max-width: 768px) {
-            .cinematic-title {
-                font-size: 12vw;
-                letter-spacing: 0.2em;
+            .gallery-slide {
+                padding: 10px;
             }
+            
+            .slide-image {
+                width: 95%;
+                height: 65%;
+            }
+            
+            .message-container {
+                padding: 25px;
+                margin: 0 15px;
+            }
+            
+            .scroll-indicator {
+                font-size: 0.7rem;
+                padding: 8px 15px;
+            }
+        }
+        
+        /* Touch Optimization */
+        .touch-active {
+            cursor: pointer;
+        }
+        
+        /* Performance Optimizations */
+        .will-change-transform {
+            will-change: transform;
+        }
+        
+        .will-change-opacity {
+            will-change: opacity;
         }
     </style>
 </head>
-<body class="overflow-x-hidden">
-    <!-- Tela Cinematográfica de Entrada -->
-    <div id="cinematic-screen" class="cinematic-black">
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+        <div style="color: var(--primary-pink); font-family: 'Montserrat', sans-serif; font-size: 1.2rem; margin-top: 10px;">
+            Carregando sua surpresa...
+        </div>
+    </div>
+
+    <!-- Cinematic Opening -->
+    <div class="cinematic-opening" id="cinematicOpening">
         <div class="film-grain"></div>
-        <div class="vignette"></div>
-        
-        <div class="text-center px-4">
-            <div class="cinematic-title text-gradient animate-text-glitch">
-                PARABÉNS
-            </div>
-            
-            <div class="text-2xl md:text-4xl font-cinzel text-soft-pink mb-12 animate-pulse-soft">
-                Julieta Pedro Nguluve Canze
-            </div>
-            
-            <div class="text-5xl md:text-8xl font-cursive text-primary-pink animate-heartbeat">
-                20
-            </div>
-            
-            <div class="mt-12">
-                <div class="text-lg text-gray-400 animate-pulse-soft" style="animation-delay: 0.5s">
-                    Prepare-se para uma surpresa especial...
-                </div>
-            </div>
+        <div class="scanlines"></div>
+        <div class="countdown" id="countdown">3</div>
+        <div class="cinematic-text" id="cinematicText">PARABÉNS</div>
+        <div style="margin-top: 20px; color: rgba(255, 255, 255, 0.8); font-family: 'Cinzel', serif; font-size: 1.5rem; text-align: center;">
+            Julieta Pedro Nguluve Canze
         </div>
     </div>
 
-    <!-- Conteúdo Principal (Escondido inicialmente) -->
-    <div id="main-content" class="hidden">
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Progress Bar -->
+        <div class="progress-bar" id="progressBar"></div>
+
         <!-- Hero Section -->
-        <section class="min-h-screen relative flex flex-col items-center justify-center px-4">
-            <!-- Background Effect -->
-            <div class="absolute inset-0 bg-gradient-to-b from-black via-deep-purple to-black"></div>
+        <section class="hero-section">
+            <div class="hero-bg"></div>
+            <div class="floating-particles" id="particlesContainer"></div>
             
-            <!-- Conteúdo -->
-            <div class="relative z-10 text-center max-w-4xl mx-auto">
-                <!-- Nome -->
-                <h1 class="text-4xl md:text-6xl font-playfair mb-4 animate-slide-up">
-                    <span class="text-gradient">Julieta</span>
-                </h1>
-                
-                <!-- Nome completo -->
-                <h2 class="text-xl md:text-2xl font-light text-soft-pink mb-8 animate-slide-up" style="animation-delay: 0.2s">
-                    Pedro Nguluve Canze
-                </h2>
-                
-                <!-- Idade -->
-                <div class="inline-flex items-center gap-4 mb-12 animate-slide-up" style="animation-delay: 0.4s">
-                    <div class="w-12 h-px bg-gradient-to-r from-transparent to-primary-pink"></div>
-                    <div class="text-3xl md:text-5xl font-bold text-gold">20</div>
-                    <div class="text-xl text-gray-400">anos</div>
-                    <div class="w-12 h-px bg-gradient-to-l from-transparent to-primary-pink"></div>
-                </div>
-                
-                <!-- Mensagem -->
-                <div class="glass-effect rounded-2xl p-6 md:p-8 mb-12 animate-fade-in" style="animation-delay: 0.6s">
-                    <p class="text-lg md:text-xl text-gray-300 leading-relaxed">
-                        "Celebrando 20 anos de luz, amor e beleza.<br>
-                        Cada dia ao seu lado é um presente da vida."
-                    </p>
-                </div>
-                
-                <!-- Instruções -->
-                <div class="text-sm text-gray-500 animate-fade-in" style="animation-delay: 0.8s">
-                    <p>Role para baixo para ver as fotos ↓</p>
-                </div>
+            <div class="hero-title">
+                <h1 class="hero-name">Julieta</h1>
+                <div class="hero-subtitle">Pedro Nguluve Canze</div>
             </div>
-        </section>
-
-        <!-- Galeria de Fotos -->
-        <section class="min-h-screen relative py-20 px-4">
-            <div class="max-w-7xl mx-auto">
-                <!-- Título da Galeria -->
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl md:text-5xl font-playfair mb-4">
-                        <span class="text-gradient">Nossas Memórias</span>
-                    </h2>
-                    <p class="text-gray-400">Uma jornada através de momentos especiais</p>
-                </div>
-                
-                <!-- Container das Fotos -->
-                <div id="photo-gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- As fotos serão carregadas via JavaScript -->
-                </div>
-                
-                <!-- Contador -->
-                <div class="text-center mt-12">
-                    <div class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/5">
-                        <span class="text-sm text-gray-400">Foto</span>
-                        <span id="current-photo" class="text-primary-pink font-bold">1</span>
-                        <span class="text-sm text-gray-400">de</span>
-                        <span id="total-photos" class="text-gray-400">7</span>
-                    </div>
-                </div>
-                
-                <!-- Instruções do Fullscreen -->
-                <div class="text-center mt-8">
-                    <p class="text-sm text-gray-500">
-                        Toque na última foto para entrar em modo tela cheia<br>
-                        Arraste para baixo para sair do modo tela cheia
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Mensagem Final -->
-        <section class="min-h-screen relative flex items-center justify-center px-4">
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-deep-purple/50 to-black"></div>
             
-            <div class="relative z-10 text-center max-w-3xl mx-auto">
-                <!-- Coração grande -->
-                <div class="inline-block mb-8 animate-heartbeat">
-                    <svg class="w-24 h-24 text-primary-pink" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                </div>
-                
-                <!-- Mensagem final -->
-                <h2 class="text-4xl md:text-6xl font-playfair mb-6">
-                    <span class="text-gradient">Te Amo</span>
-                </h2>
-                
-                <div class="glass-effect rounded-2xl p-8 mb-8">
-                    <p class="text-xl md:text-2xl text-soft-pink leading-relaxed">
-                        Julieta, você é a razão dos meus sorrisos,<br>
-                        a paz dos meus dias e o amor da minha vida.
-                    </p>
-                </div>
-                
-                <!-- Data -->
-                <div class="text-gray-500">
-                    Celebrando 20 anos em 2024
-                </div>
+            <div class="age-display">20</div>
+            <div style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem; margin-bottom: 1rem;">anos</div>
+            
+            <div class="heart-icon"></div>
+            
+            <div style="text-align: center; max-width: 500px; margin-top: 2rem;">
+                <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
+                    Celebrando duas décadas de luz, amor e beleza.<br>
+                    Uma jornada que apenas começou.
+                </p>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="py-8 px-4 text-center text-gray-600 text-sm">
-            <p>Feito com ❤️ especialmente para Julieta</p>
-            <p class="mt-1">Uma celebração de 20 anos de amor</p>
-        </footer>
-    </div>
+        <!-- Gallery Section -->
+        <section class="gallery-section">
+            <div class="gallery-container" id="galleryContainer">
+                <!-- Slides serão adicionados via JavaScript -->
+            </div>
+            <div class="slide-instruction">Deslize para os lados • Toque para ampliar</div>
+        </section>
 
-    <!-- Tela Fullscreen -->
-    <div id="fullscreen-view" class="fixed inset-0 bg-black z-50 hidden">
-        <!-- Contador de saída -->
-        <div class="slide-exit-hint">
-            Arraste para baixo para sair
-        </div>
-        
-        <!-- Container da imagem -->
-        <div id="fullscreen-image-container" class="w-full h-full flex items-center justify-center">
-            <img id="fullscreen-image" class="max-w-full max-h-full object-contain" alt="Foto em tela cheia">
+        <!-- Message Section -->
+        <section class="message-section">
+            <div class="message-container">
+                <h2 class="message-title">Para minha Julieta</h2>
+                <div class="message-text" id="animatedMessage">
+                    <!-- Texto será animado via GSAP -->
+                </div>
+                <div class="signature">Com todo meu amor</div>
+            </div>
+        </section>
+
+        <!-- Final Section -->
+        <section class="final-section">
+            <div class="fireworks" id="fireworksContainer"></div>
+            <h2 class="final-title">Feliz 20 Anos!</h2>
+            <div style="text-align: center; max-width: 600px; margin-bottom: 2rem;">
+                <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6; font-size: 1.1rem;">
+                    Que cada dia dos seus 20 anos seja tão especial<br>
+                    quanto você é para mim.
+                </p>
+            </div>
+            <div class="heart-icon" style="width: 40px; height: 40px;"></div>
+        </section>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator" id="scrollIndicator">
+            <span>Deslize para continuar</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12l7 7 7-7"/>
+            </svg>
         </div>
     </div>
 
-    <!-- Áudio de fundo -->
-    <audio id="background-music" loop autoplay>
+    <!-- Fullscreen Overlay -->
+    <div class="fullscreen-overlay" id="fullscreenOverlay">
+        <button class="close-fullscreen" id="closeFullscreen">&times;</button>
+        <img class="fullscreen-image" id="fullscreenImage" src="" alt="">
+        <div class="exit-hint">Arraste para baixo para sair</div>
+    </div>
+
+    <!-- Audio -->
+    <audio id="backgroundMusic" loop>
         <source src="https://assets.mixkit.co/music/preview/mixkit-heartbeat-essence-532.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        // Configuração
-        const TOTAL_PHOTOS = 7;
-        const photoFilenames = Array.from({length: TOTAL_PHOTOS}, (_, i) => `${i + 1}.jpg`);
-        let currentPhotoIndex = 0;
+        // Configurações
+        const TOTAL_IMAGES = 7;
+        let currentImageIndex = 0;
         let isFullscreen = false;
-        let touchStartY = 0;
-        let hearts = [];
+        let particles = [];
+        let fireworks = [];
 
         // Elementos DOM
-        const cinematicScreen = document.getElementById('cinematic-screen');
-        const mainContent = document.getElementById('main-content');
-        const photoGallery = document.getElementById('photo-gallery');
-        const fullscreenView = document.getElementById('fullscreen-view');
-        const fullscreenImage = document.getElementById('fullscreen-image');
-        const currentPhotoElement = document.getElementById('current-photo');
-        const totalPhotosElement = document.getElementById('total-photos');
-        const audio = document.getElementById('background-music');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const cinematicOpening = document.getElementById('cinematicOpening');
+        const countdownElement = document.getElementById('countdown');
+        const cinematicText = document.getElementById('cinematicText');
+        const mainContent = document.getElementById('mainContent');
+        const galleryContainer = document.getElementById('galleryContainer');
+        const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+        const fullscreenImage = document.getElementById('fullscreenImage');
+        const closeFullscreenBtn = document.getElementById('closeFullscreen');
+        const scrollIndicator = document.getElementById('scrollIndicator');
+        const progressBar = document.getElementById('progressBar');
+        const animatedMessage = document.getElementById('animatedMessage');
+        const particlesContainer = document.getElementById('particlesContainer');
+        const fireworksContainer = document.getElementById('fireworksContainer');
+        const audio = document.getElementById('backgroundMusic');
+
+        // Mensagem para animar
+        const messageText = `Minha querida Julieta,
+
+Hoje celebramos muito mais do que 20 anos de vida. Celebramos 20 anos da pessoa mais incrível que já conheci.
+
+Cada sorriso seu ilumina meus dias, cada gesto seu aquece meu coração. Você é a combinação perfeita de força, delicadeza e amor.
+
+Nestas duas décadas, você já realizou tanto e ainda tem um universo inteiro para conquistar. Quero estar ao seu lado em cada passo, em cada vitória, em cada sonho realizado.
+
+Que este novo ano traga ainda mais alegrias, conquistas e momentos inesquecíveis.
+
+Feliz aniversário, meu amor.`;
 
         // Inicializar quando a página carregar
-        document.addEventListener('DOMContentLoaded', () => {
-            // Configurar número total de fotos
-            totalPhotosElement.textContent = TOTAL_PHOTOS;
-            
-            // Iniciar sequência cinematográfica
-            startCinematicSequence();
-            
-            // Carregar galeria
-            loadPhotoGallery();
-            
+        document.addEventListener('DOMContentLoaded', async () => {
             // Iniciar música
-            startMusic();
+            await startMusic();
+            
+            // Simular carregamento
+            setTimeout(() => {
+                hideLoadingScreen();
+                startCinematicSequence();
+            }, 2000);
         });
 
-        // Sequência cinematográfica
-        async function startCinematicSequence() {
-            // Mostrar tela preta inicial
-            cinematicScreen.style.display = 'flex';
-            
-            // Criar efeito de contagem regressiva (3...2...1...)
-            await countdownSequence();
-            
-            // Esperar 2 segundos no "PARABÉNS"
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            // Transição para o conteúdo principal
-            transitionToMainContent();
-            
-            // Criar explosão de corações
-            createHeartExplosion();
-        }
-
-        // Sequência de contagem regressiva
-        async function countdownSequence() {
-            const cinematicTitle = document.querySelector('.cinematic-title');
-            const originalText = cinematicTitle.textContent;
-            
-            // Contagem 3, 2, 1
-            for (let i = 3; i >= 1; i--) {
-                cinematicTitle.textContent = i.toString();
-                cinematicTitle.style.color = i === 3 ? '#ff6b9d' : i === 2 ? '#ffd166' : '#ffffff';
-                
-                // Animação de zoom
-                gsap.fromTo(cinematicTitle,
-                    { scale: 0.5, opacity: 0 },
-                    { scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(1.7)' }
-                );
-                
-                // Som de contagem (pode ser adicionado se quiser)
-                // playSound(`count${i}`);
-                
-                await new Promise(resolve => setTimeout(resolve, 1000));
+        // Iniciar música
+        async function startMusic() {
+            audio.volume = 0.3;
+            try {
+                await audio.play();
+            } catch (err) {
+                // Fallback para interação do usuário
+                const enableAudio = () => {
+                    audio.play();
+                    document.removeEventListener('click', enableAudio);
+                    document.removeEventListener('touchstart', enableAudio);
+                };
+                document.addEventListener('click', enableAudio);
+                document.addEventListener('touchstart', enableAudio);
             }
-            
-            // Restaurar "PARABÉNS"
-            cinematicTitle.textContent = originalText;
-            cinematicTitle.style.color = '';
-            
-            // Animação final
-            gsap.fromTo(cinematicTitle,
-                { scale: 1.5, opacity: 0 },
-                { scale: 1, opacity: 1, duration: 1, ease: 'elastic.out(1, 0.5)' }
-            );
         }
 
-        // Transição para conteúdo principal
-        function transitionToMainContent() {
-            // Animação de saída da tela cinemática
-            gsap.to(cinematicScreen, {
+        // Esconder tela de carregamento
+        function hideLoadingScreen() {
+            gsap.to(loadingScreen, {
                 opacity: 0,
-                duration: 2,
-                ease: 'power2.inOut',
+                duration: 1,
                 onComplete: () => {
-                    cinematicScreen.style.display = 'none';
-                    mainContent.classList.remove('hidden');
-                    
-                    // Animação de entrada do conteúdo principal
-                    gsap.from(mainContent, {
-                        opacity: 0,
-                        duration: 1,
-                        ease: 'power2.out'
-                    });
+                    loadingScreen.style.display = 'none';
                 }
             });
         }
 
-        // Criar explosão de corações
-        function createHeartExplosion() {
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    createHeart(
-                        window.innerWidth / 2,
-                        window.innerHeight / 2
+        // Sequência cinematográfica
+        async function startCinematicSequence() {
+            // Contagem regressiva
+            await countdownAnimation();
+            
+            // Explosão de texto
+            await textExplosion();
+            
+            // Transição para conteúdo principal
+            transitionToMainContent();
+            
+            // Criar explosão inicial
+            createInitialExplosion();
+        }
+
+        // Animação de contagem regressiva
+        async function countdownAnimation() {
+            for (let i = 3; i > 0; i--) {
+                countdownElement.textContent = i;
+                await new Promise(resolve => {
+                    gsap.fromTo(countdownElement,
+                        { scale: 0, opacity: 0 },
+                        { 
+                            scale: 1, 
+                            opacity: 1, 
+                            duration: 0.8,
+                            ease: 'back.out(1.7)',
+                            onComplete: resolve
+                        }
                     );
-                }, i * 50);
+                });
+                await new Promise(resolve => setTimeout(resolve, 800));
             }
         }
 
-        // Criar coração individual
-        function createHeart(x, y) {
-            const heart = document.createElement('div');
-            heart.className = 'heart-trail';
-            heart.innerHTML = '❤️';
-            heart.style.left = `${x}px`;
-            heart.style.top = `${y}px`;
-            heart.style.fontSize = `${Math.random() * 30 + 20}px`;
+        // Explosão de texto
+        async function textExplosion() {
+            countdownElement.textContent = "🎉";
             
-            document.body.appendChild(heart);
-            hearts.push(heart);
+            // Animação do texto "PARABÉNS"
+            gsap.fromTo(cinematicText,
+                { scale: 0.5, opacity: 0 },
+                { scale: 1, opacity: 1, duration: 1, ease: 'elastic.out(1, 0.5)' }
+            );
             
-            // Animação GSAP
-            gsap.to(heart, {
-                x: `+=${Math.random() * 400 - 200}`,
-                y: `+=${Math.random() * 400 - 200}`,
-                opacity: 1,
+            // Criar partículas ao redor do texto
+            createTextParticles();
+            
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+
+        // Criar partículas ao redor do texto
+        function createTextParticles() {
+            const rect = cinematicText.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            for (let i = 0; i < 50; i++) {
+                createParticle(centerX, centerY);
+            }
+        }
+
+        // Transição para conteúdo principal
+        function transitionToMainContent() {
+            // Fade out da abertura cinematográfica
+            gsap.to(cinematicOpening, {
+                opacity: 0,
                 duration: 2,
-                ease: 'power2.out',
+                ease: 'power2.inOut',
                 onComplete: () => {
-                    gsap.to(heart, {
-                        opacity: 0,
-                        duration: 0.5,
+                    cinematicOpening.style.display = 'none';
+                    
+                    // Mostrar conteúdo principal
+                    mainContent.style.display = 'block';
+                    gsap.to(mainContent, {
+                        opacity: 1,
+                        duration: 1,
                         onComplete: () => {
-                            heart.remove();
-                            hearts = hearts.filter(h => h !== heart);
+                            initMainContent();
                         }
                     });
                 }
             });
         }
 
-        // Carregar galeria de fotos
-        function loadPhotoGallery() {
-            photoGallery.innerHTML = '';
+        // Criar explosão inicial
+        function createInitialExplosion() {
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
             
-            photoFilenames.forEach((filename, index) => {
-                const photoElement = createPhotoElement(filename, index);
-                photoGallery.appendChild(photoElement);
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    createParticle(centerX, centerY);
+                }, i * 20);
+            }
+        }
+
+        // Inicializar conteúdo principal
+        function initMainContent() {
+            // Inicializar GSAP ScrollTrigger
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Configurar animações de scroll
+            setupScrollAnimations();
+            
+            // Carregar galeria
+            loadGallery();
+            
+            // Inicializar partículas flutuantes
+            initFloatingParticles();
+            
+            // Configurar eventos de fullscreen
+            setupFullscreenEvents();
+            
+            // Configurar barra de progresso
+            setupProgressBar();
+            
+            // Animar mensagem
+            animateMessage();
+            
+            // Inicializar fogos de artifício
+            initFireworks();
+            
+            // Configurar indicador de scroll
+            setupScrollIndicator();
+        }
+
+        // Configurar animações de scroll
+        function setupScrollAnimations() {
+            // Animar elementos ao aparecer na tela
+            gsap.utils.toArray('.hero-section, .message-container, .final-title').forEach((element, i) => {
+                gsap.from(element, {
+                    scrollTrigger: {
+                        trigger: element,
+                        start: 'top 80%',
+                        end: 'bottom 20%',
+                        toggleActions: 'play none none reverse'
+                    },
+                    opacity: 0,
+                    y: 50,
+                    duration: 1,
+                    delay: i * 0.2
+                });
+            });
+            
+            // Efeito parallax no hero
+            gsap.to('.hero-bg', {
+                scrollTrigger: {
+                    scrub: true
+                },
+                scale: 1.2,
+                duration: 1
             });
         }
 
-        // Criar elemento de foto
-        function createPhotoElement(filename, index) {
-            const isLastPhoto = index === TOTAL_PHOTOS - 1;
+        // Carregar galeria
+        function loadGallery() {
+            galleryContainer.innerHTML = '';
             
-            const container = document.createElement('div');
-            container.className = 'relative overflow-hidden rounded-2xl cursor-pointer transform transition-transform duration-300 hover:scale-105';
-            container.style.height = '300px';
-            
-            const img = document.createElement('img');
-            img.src = filename;
-            img.alt = `Foto ${index + 1} da Julieta`;
-            img.className = 'w-full h-full object-cover';
-            img.loading = 'lazy';
-            
-            const overlay = document.createElement('div');
-            overlay.className = 'absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4';
-            
-            const number = document.createElement('div');
-            number.className = 'text-white font-bold text-xl';
-            number.textContent = `${index + 1}`;
-            
-            overlay.appendChild(number);
-            container.appendChild(img);
-            container.appendChild(overlay);
-            
-            // Evento de clique
-            container.addEventListener('click', () => {
-                currentPhotoIndex = index;
-                currentPhotoElement.textContent = index + 1;
+            for (let i = 1; i <= TOTAL_IMAGES; i++) {
+                const slide = document.createElement('div');
+                slide.className = 'gallery-slide';
                 
-                if (isLastPhoto) {
-                    // Última foto: entra em fullscreen
-                    enterFullscreen(filename);
-                } else {
-                    // Outras fotos: mostrar ampliada
-                    showPhotoPreview(filename);
+                const img = document.createElement('img');
+                img.className = 'slide-image';
+                img.src = `${i}.jpg`;
+                img.alt = `Foto ${i} da Julieta`;
+                img.loading = 'lazy';
+                
+                const number = document.createElement('div');
+                number.className = 'slide-number';
+                number.textContent = `${i}/${TOTAL_IMAGES}`;
+                
+                slide.appendChild(img);
+                slide.appendChild(number);
+                galleryContainer.appendChild(slide);
+                
+                // Evento de clique para fullscreen
+                img.addEventListener('click', () => {
+                    openFullscreen(i);
+                });
+            }
+            
+            // Configurar rolagem suave para a galeria
+            setupGalleryScroll();
+        }
+
+        // Configurar rolagem da galeria
+        function setupGalleryScroll() {
+            let isScrolling;
+            
+            galleryContainer.addEventListener('scroll', () => {
+                clearTimeout(isScrolling);
+                
+                isScrolling = setTimeout(() => {
+                    const scrollPosition = galleryContainer.scrollLeft;
+                    const slideWidth = galleryContainer.clientWidth;
+                    currentImageIndex = Math.round(scrollPosition / slideWidth);
+                    
+                    // Se for a última imagem, mostrar dica para fullscreen
+                    if (currentImageIndex === TOTAL_IMAGES - 1) {
+                        showFullscreenHint();
+                    }
+                }, 150);
+            });
+        }
+
+        // Mostrar dica de fullscreen
+        function showFullscreenHint() {
+            const hint = document.createElement('div');
+            hint.className = 'slide-instruction';
+            hint.textContent = 'Toque na imagem para ver em tela cheia';
+            hint.style.bottom = '60px';
+            
+            document.querySelector('.gallery-section').appendChild(hint);
+            
+            setTimeout(() => {
+                hint.remove();
+            }, 3000);
+        }
+
+        // Inicializar partículas flutuantes
+        function initFloatingParticles() {
+            // Criar partículas iniciais
+            for (let i = 0; i < 30; i++) {
+                createFloatingParticle();
+            }
+            
+            // Adicionar novas partículas periodicamente
+            setInterval(() => {
+                if (particles.length < 50) {
+                    createFloatingParticle();
+                }
+            }, 1000);
+        }
+
+        // Criar partícula flutuante
+        function createFloatingParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Posição aleatória
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            
+            // Tamanho aleatório
+            const size = Math.random() * 3 + 1;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            // Cor aleatória
+            const colors = ['#ff4081', '#ff79b0', '#ffd700', '#00ffff'];
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            
+            particlesContainer.appendChild(particle);
+            particles.push(particle);
+            
+            // Animar partícula
+            animateParticle(particle);
+        }
+
+        // Animar partícula
+        function animateParticle(particle) {
+            const duration = Math.random() * 10 + 10;
+            const xMove = Math.random() * 100 - 50;
+            const yMove = Math.random() * 100 - 50;
+            
+            gsap.to(particle, {
+                x: `+=${xMove}`,
+                y: `+=${yMove}`,
+                duration: duration,
+                ease: 'sine.inOut',
+                onComplete: () => {
+                    // Remover partícula e criar nova
+                    particle.remove();
+                    particles = particles.filter(p => p !== particle);
+                    createFloatingParticle();
+                }
+            });
+        }
+
+        // Criar partícula única
+        function createParticle(x, y) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            const size = Math.random() * 4 + 2;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            const colors = ['#ff4081', '#ff79b0', '#ffd700', '#00ffff'];
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            
+            particlesContainer.appendChild(particle);
+            
+            // Animar explosão
+            gsap.to(particle, {
+                x: `+=${Math.random() * 200 - 100}`,
+                y: `+=${Math.random() * 200 - 100}`,
+                opacity: 0,
+                duration: 2,
+                ease: 'power2.out',
+                onComplete: () => particle.remove()
+            });
+        }
+
+        // Configurar eventos de fullscreen
+        function setupFullscreenEvents() {
+            closeFullscreenBtn.addEventListener('click', closeFullscreen);
+            
+            // Sair do fullscreen com ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && isFullscreen) {
+                    closeFullscreen();
                 }
             });
             
-            return container;
-        }
-
-        // Mostrar prévia da foto
-        function showPhotoPreview(filename) {
-            // Criar overlay temporário
-            const preview = document.createElement('div');
-            preview.className = 'fixed inset-0 bg-black/90 z-40 flex items-center justify-center p-4';
-            
-            const img = document.createElement('img');
-            img.src = filename;
-            img.alt = 'Prévia da foto';
-            img.className = 'max-w-full max-h-full object-contain rounded-lg';
-            
-            preview.appendChild(img);
-            document.body.appendChild(preview);
-            
-            // Fechar ao clicar
-            preview.addEventListener('click', () => {
-                preview.remove();
-            });
-            
-            // Animar entrada
-            gsap.from(preview, { opacity: 0, duration: 0.3 });
-            gsap.from(img, { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
-        }
-
-        // Entrar em modo fullscreen
-        function enterFullscreen(filename) {
-            isFullscreen = true;
-            fullscreenImage.src = filename;
-            fullscreenView.classList.remove('hidden');
-            
-            // Animar entrada
-            gsap.from(fullscreenView, { opacity: 0, duration: 0.5 });
-            gsap.from(fullscreenImage, { scale: 0.8, opacity: 0, duration: 0.8, ease: 'power2.out' });
-            
-            // Adicionar eventos de toque para sair
-            setupFullscreenExit();
-        }
-
-        // Configurar saída do fullscreen
-        function setupFullscreenExit() {
+            // Sair do fullscreen arrastando para baixo
             let touchStartY = 0;
-            let isDragging = false;
             
-            // Evento de início do toque
-            fullscreenView.addEventListener('touchstart', (e) => {
+            fullscreenOverlay.addEventListener('touchstart', (e) => {
                 touchStartY = e.touches[0].clientY;
-                isDragging = true;
             });
             
-            // Evento de movimento do toque
-            fullscreenView.addEventListener('touchmove', (e) => {
-                if (!isDragging) return;
+            fullscreenOverlay.addEventListener('touchmove', (e) => {
+                if (!isFullscreen) return;
                 
                 const touchY = e.touches[0].clientY;
                 const deltaY = touchY - touchStartY;
                 
-                // Se arrastou para baixo mais de 100px
                 if (deltaY > 100) {
-                    exitFullscreen();
-                }
-            });
-            
-            // Evento de fim do toque
-            fullscreenView.addEventListener('touchend', () => {
-                isDragging = false;
-            });
-            
-            // Também sair com clique
-            fullscreenView.addEventListener('click', (e) => {
-                if (e.target === fullscreenView) {
-                    exitFullscreen();
-                }
-            });
-            
-            // Sair com ESC
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && isFullscreen) {
-                    exitFullscreen();
+                    closeFullscreen();
                 }
             });
         }
 
-        // Sair do modo fullscreen
-        function exitFullscreen() {
+        // Abrir fullscreen
+        function openFullscreen(imageNumber) {
+            isFullscreen = true;
+            fullscreenImage.src = `${imageNumber}.jpg`;
+            fullscreenOverlay.style.display = 'flex';
+            
+            gsap.fromTo(fullscreenOverlay,
+                { opacity: 0 },
+                { opacity: 1, duration: 0.5 }
+            );
+            
+            gsap.fromTo(fullscreenImage,
+                { scale: 0.8, opacity: 0 },
+                { scale: 1, opacity: 1, duration: 0.7, ease: 'back.out(1.7)' }
+            );
+        }
+
+        // Fechar fullscreen
+        function closeFullscreen() {
             isFullscreen = false;
             
-            // Animar saída
-            gsap.to(fullscreenView, {
+            gsap.to(fullscreenOverlay, {
                 opacity: 0,
                 duration: 0.5,
                 onComplete: () => {
-                    fullscreenView.classList.add('hidden');
-                    fullscreenImage.src = '';
+                    fullscreenOverlay.style.display = 'none';
                 }
             });
         }
 
-        // Iniciar música
-        async function startMusic() {
-            audio.volume = 0.3;
-            try {
-                // Tentar tocar imediatamente
-                await audio.play();
-            } catch (err) {
-                console.log('Autoplay bloqueado, aguardando interação...');
+        // Configurar barra de progresso
+        function setupProgressBar() {
+            window.addEventListener('scroll', () => {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
                 
-                // Tocar na primeira interação do usuário
-                const playOnInteraction = () => {
-                    audio.play().catch(console.error);
-                    document.removeEventListener('click', playOnInteraction);
-                    document.removeEventListener('touchstart', playOnInteraction);
-                };
+                gsap.to(progressBar, {
+                    scaleX: scrolled / 100,
+                    duration: 0.1
+                });
+            });
+        }
+
+        // Animar mensagem
+        function animateMessage() {
+            animatedMessage.innerHTML = '';
+            const letters = messageText.split('');
+            
+            letters.forEach((letter, i) => {
+                const span = document.createElement('span');
+                span.textContent = letter;
+                span.style.opacity = '0';
+                span.style.display = letter === '\n' ? 'br' : 'inline';
                 
-                document.addEventListener('click', playOnInteraction);
-                document.addEventListener('touchstart', playOnInteraction);
+                animatedMessage.appendChild(span);
+                
+                // Animar cada letra
+                gsap.to(span, {
+                    opacity: 1,
+                    duration: 0.05,
+                    delay: i * 0.03,
+                    scrollTrigger: {
+                        trigger: '.message-section',
+                        start: 'top 70%',
+                        end: 'bottom 30%',
+                        toggleActions: 'play none none none'
+                    }
+                });
+            });
+        }
+
+        // Inicializar fogos de artifício
+        function initFireworks() {
+            // Criar fogos periodicamente
+            setInterval(() => {
+                if (fireworks.length < 10) {
+                    createFirework();
+                }
+            }, 2000);
+        }
+
+        // Criar fogo de artifício
+        function createFirework() {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight * 0.5;
+            
+            const colors = ['#ff4081', '#ff79b0', '#ffd700', '#00ffff'];
+            firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            firework.style.left = `${x}px`;
+            firework.style.top = `${y}px`;
+            
+            fireworksContainer.appendChild(firework);
+            fireworks.push(firework);
+            
+            // Animar fogo de artifício
+            animateFirework(firework);
+        }
+
+        // Animar fogo de artifício
+        function animateFirework(firework) {
+            const duration = Math.random() * 2 + 1;
+            
+            gsap.to(firework, {
+                scale: 20,
+                opacity: 0,
+                duration: duration,
+                ease: 'power2.out',
+                onComplete: () => {
+                    // Criar explosão
+                    createFireworkExplosion(firework);
+                    firework.remove();
+                    fireworks = fireworks.filter(f => f !== firework);
+                }
+            });
+        }
+
+        // Criar explosão de fogo de artifício
+        function createFireworkExplosion(firework) {
+            const rect = firework.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            
+            for (let i = 0; i < 30; i++) {
+                createParticle(x, y);
             }
         }
 
-        // Função para reproduzir sons (se quiser adicionar sons de contagem)
-        function playSound(soundName) {
-            // Implementar se quiser adicionar sons de contagem
-            // Por exemplo: const audio = new Audio(`sounds/${soundName}.mp3`);
-            // audio.volume = 0.5;
-            // audio.play();
+        // Configurar indicador de scroll
+        function setupScrollIndicator() {
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const viewportHeight = window.innerHeight;
+                
+                if (scrolled > viewportHeight * 0.5) {
+                    scrollIndicator.style.opacity = '0';
+                } else {
+                    scrollIndicator.style.opacity = '1';
+                }
+            });
+            
+            // Esconder completamente após certo ponto
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+                
+                if (scrolled > totalHeight * 0.8) {
+                    scrollIndicator.style.display = 'none';
+                } else {
+                    scrollIndicator.style.display = 'flex';
+                }
+            });
         }
 
-        // Limpar corações quando a página for fechada
-        window.addEventListener('beforeunload', () => {
-            hearts.forEach(heart => heart.remove());
+        // Otimizações para mobile
+        document.addEventListener('touchstart', () => {}, { passive: true });
+        document.addEventListener('touchmove', () => {}, { passive: true });
+
+        // Prevenir zoom com dois dedos
+        document.addEventListener('gesturestart', (e) => {
+            e.preventDefault();
+        });
+
+        // Redimensionar
+        window.addEventListener('resize', () => {
+            particles.forEach(particle => particle.remove());
+            particles = [];
+            
+            fireworks.forEach(firework => firework.remove());
+            fireworks = [];
+            
+            initFloatingParticles();
+            initFireworks();
         });
     </script>
 </body>
