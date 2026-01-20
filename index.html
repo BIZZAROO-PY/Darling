@@ -5676,300 +5676,7 @@ Com todo amor dos múltiplos universos,`,
     // SISTEMA DE VÍDEOS HOLOGRÁFICOS
     // ===========================================
     
-    class SistemaVideosHolograficos {
-        constructor() {
-            this.sistemaAudio = sistemaAudioCosmico;
-            this.videoTocando = false;
-            this.videoAtual = null;
-            this.videos = [
-                ELEMENTOS.hologramVideo1,
-                ELEMENTOS.hologramVideo2,
-                ELEMENTOS.hologramVideo3
-            ];
-            
-            this.inicializar();
-        }
-        
-        inicializar() {
-            this.configurarEventosVideos();
-            this.configurarIntersectionObserver();
-        }
-        
-        configurarEventosVideos() {
-            // Eventos dos botões de play
-            ELEMENTOS.hologramPlayButtons.forEach(botao => {
-                botao.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const videoId = e.currentTarget.dataset.video;
-                    this.alternarVideo(videoId);
-                });
-            });
-            
-            // Eventos de clique nos players
-            ELEMENTOS.hologramPlayers.forEach(player => {
-                player.addEventListener('click', () => {
-                    const video = player.querySelector('video');
-                    this.alternarVideo(video.id);
-                });
-            });
-            
-            // Eventos de término de vídeo
-            this.videos.forEach(video => {
-                video.addEventListener('ended', () => {
-                    this.videoTerminou(video);
-                });
-            });
-            
-            // Eventos de teclado
-            document.addEventListener('keydown', (e) => {
-                if (e.key === ' ' || e.key === 'Spacebar') {
-                    e.preventDefault();
-                    if (this.videoAtual) {
-                        this.alternarVideo(this.videoAtual.id);
-                    }
-                }
-            });
-        }
-        
-        configurarIntersectionObserver() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        this.entrouSecaoVideos();
-                    } else {
-                        this.saiuSecaoVideos();
-                    }
-                });
-            }, {
-                threshold: 0.3
-            });
-            
-            observer.observe(ELEMENTOS.holographicVideos);
-        }
-        
-        alternarVideo(videoId) {
-            const video = document.getElementById(videoId);
-            
-            if (!video) return;
-            
-            if (video.paused) {
-                this.tocarVideo(video);
-            } else {
-                this.pausarVideo(video);
-            }
-        }
-        
-        tocarVideo(video) {
-            // Pausar vídeo atual se houver
-            if (this.videoTocando && this.videoAtual && this.videoAtual !== video) {
-                this.pausarVideo(this.videoAtual);
-            }
-            
-            // Configurar vídeo
-            video.muted = false;
-            video.volume = 0.7;
-            
-            // Tocar
-            const playPromise = video.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    this.videoTocando = true;
-                    this.videoAtual = video;
-                    
-                    // Atualizar interface
-                    this.atualizarInterfaceVideo(video, true);
-                    
-                    // Fade out da música de fundo
-                    this.sistemaAudio.fadeOutTudo(1);
-                    
-                    // Efeitos visuais
-                    this.efeitosVideoTocando(video);
-                    
-                    // Partículas
-                    const player = video.closest('.hologram-player');
-                    if (player) {
-                        const rect = player.getBoundingClientRect();
-                        const centroX = rect.left + rect.width / 2;
-                        const centroY = rect.top + rect.height / 2;
-                        
-                        sistemaParticulasCosmico.criarExplosao(centroX, centroY, 20, 'nebulosa', 0.5);
-                    }
-                    
-                    // Som
-                    sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicWhoosh, 0.4);
-                }).catch((error) => {
-                    console.log('Erro ao tocar vídeo:', error);
-                    // Autoplay bloqueado, solicitar interação
-                    MULTIVERSO.usuarioInteragiu = false;
-                });
-            }
-        }
-        
-        pausarVideo(video) {
-            video.pause();
-            this.videoTocando = false;
-            this.videoAtual = null;
-            
-            // Atualizar interface
-            this.atualizarInterfaceVideo(video, false);
-            
-            // Restaurar música de fundo
-            if (MULTIVERSO.trilhaAtual) {
-                const trilha = sistemaAudioCosmico.trilhas[MULTIVERSO.trilhaAtual];
-                if (trilha) {
-                    trilha.volume = 0;
-                    const playPromise = trilha.play();
-                    if (playPromise !== undefined) {
-                        playPromise.catch(() => {});
-                    }
-                    gsap.to(trilha, {
-                        volume: sistemaAudioCosmico.volume,
-                        duration: 1,
-                        ease: 'power2.inOut'
-                    });
-                }
-            }
-        }
-        
-        videoTerminou(video) {
-            this.videoTocando = false;
-            this.videoAtual = null;
-            
-            // Atualizar interface
-            this.atualizarInterfaceVideo(video, false);
-            
-            // Restaurar música de fundo
-            if (MULTIVERSO.trilhaAtual) {
-                const trilha = sistemaAudioCosmico.trilhas[MULTIVERSO.trilhaAtual];
-                if (trilha) {
-                    trilha.volume = 0;
-                    const playPromise = trilha.play();
-                    if (playPromise !== undefined) {
-                        playPromise.catch(() => {});
-                    }
-                    gsap.to(trilha, {
-                        volume: sistemaAudioCosmico.volume,
-                        duration: 1,
-                        ease: 'power2.inOut'
-                    });
-                }
-            }
-        }
-        
-        atualizarInterfaceVideo(video, tocando) {
-            const botao = document.querySelector(`[data-video="${video.id}"]`);
-            if (!botao) return;
-            
-            const icone = botao.querySelector('.hologram-play-icon');
-            if (!icone) return;
-            
-            if (tocando) {
-                // Mudar para ícone de pausa
-                icone.style.borderLeft = '15px solid var(--deep-space)';
-                icone.style.borderRight = '15px solid var(--deep-space)';
-                icone.style.borderTop = '20px solid transparent';
-                icone.style.borderBottom = '20px solid transparent';
-                icone.style.marginLeft = '0';
-            } else {
-                // Mudar para ícone de play
-                icone.style.borderLeft = '25px solid var(--deep-space)';
-                icone.style.borderTop = '15px solid transparent';
-                icone.style.borderBottom = '15px solid transparent';
-                icone.style.borderRight = '0';
-                icone.style.marginLeft = '5px';
-            }
-        }
-        
-        efeitosVideoTocando(video) {
-            const player = video.closest('.hologram-player');
-            if (!player) return;
-            
-            // Efeito de pulso
-            gsap.to(player, {
-                scale: 1.05,
-                duration: 0.5,
-                ease: 'power2.inOut',
-                yoyo: true,
-                repeat: -1
-            });
-            
-            // Partículas contínuas
-            const intervalo = setInterval(() => {
-                if (!this.videoTocando || this.videoAtual !== video) {
-                    clearInterval(intervalo);
-                    return;
-                }
-                
-                const rect = player.getBoundingClientRect();
-                const x = rect.left + Math.random() * rect.width;
-                const y = rect.top + Math.random() * rect.height;
-                
-                sistemaParticulasCosmico.criarParticula(x, y, 'nebulosa', {
-                    tamanho: Math.random() * 3 + 1,
-                    vida: Math.random() * 100 + 50,
-                    velocidadeX: (Math.random() - 0.5) * 2,
-                    velocidadeY: (Math.random() - 0.5) * 2
-                });
-            }, 300);
-            
-            // Limpar intervalo quando o vídeo parar
-            video.addEventListener('pause', () => {
-                clearInterval(intervalo);
-                gsap.killTweensOf(player);
-                gsap.to(player, {
-                    scale: 1,
-                    duration: 0.3,
-                    ease: 'power2.out'
-                });
-            });
-            
-            video.addEventListener('ended', () => {
-                clearInterval(intervalo);
-                gsap.killTweensOf(player);
-                gsap.to(player, {
-                    scale: 1,
-                    duration: 0.3,
-                    ease: 'power2.out'
-                });
-            });
-        }
-        
-        entrouSecaoVideos() {
-            // Efeito visual ao entrar na seção
-            ELEMENTOS.hologramPlayers.forEach((player, index) => {
-                gsap.to(player, {
-                    y: -20,
-                    duration: 0.5,
-                    delay: index * 0.1,
-                    ease: 'power2.out'
-                });
-            });
-            
-            // Partículas
-            sistemaParticulasCosmico.criarChuva(50, 'nebulosa');
-            
-            // Som ambiente
-            sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicWhoosh, 0.3);
-        }
-        
-        saiuSecaoVideos() {
-            // Reverter efeitos
-            ELEMENTOS.hologramPlayers.forEach(player => {
-                gsap.to(player, {
-                    y: 0,
-                    duration: 0.5,
-                    ease: 'power2.out'
-                });
-            });
-            
-            // Parar vídeo se estiver tocando
-            if (this.videoTocando && this.videoAtual) {
-                this.pausarVideo(this.videoAtual);
-            }
-        }
-    }
-    
+     
     // ===========================================
     // SISTEMA DE REVELAÇÃO DO ANEL CÓSMICO
     // ===========================================
@@ -7501,1162 +7208,1186 @@ Com todo amor dos múltiplos universos,`,
     // INICIALIZAÇÃO DO UNIVERSO - CORRIGIDA
     // ===========================================
     
-                        
-             
-        // ===========================================
-        // SISTEMA PRINCIPAL
-        // ===========================================
-        
-        // Instanciar sistemas
-        let sistemaAudioCosmico;
-        let sistemaParticulasCosmico;
-        let sistemaCursor;
-        let sistemaGaleria;
-        let sistemaTimeline;
-        let sistemaVideos;
-        let sistemaRevelacaoAnel;
-        let sistemaScroll;
-        let sistemaAnimacoes;
-        let sistemaCarregamento;
-        // Inicializar quando o DOM estiver pronto
-        document.addEventListener('DOMContentLoaded', () => {
-            inicializarSistemaCosmico();
-        });
-        
-        function inicializarSistemaCosmico() {
-            // 1. Inicializar sistemas
-            sistemaAudioCosmico = new SistemaAudioCosmico();
-            sistemaParticulasCosmico = new SistemaParticulasCosmico();
-            sistemaCursor = new SistemaCursorInterdimensional();
-            
-            // 2. Configurar loading
-            configurarSistemaLoading();
-            
-            // 3. Configurar introdução cinematográfica
-            configurarIntroducaoCinematografica();
-            
-            // 4. Inicializar galeria e timeline depois do loading
-            setTimeout(() => {
-                sistemaGaleria = new SistemaGaleriaInterdimensional();
-                sistemaTimeline = new SistemaTimelineTemporal();
-                
-                // 5. Configurar eventos gerais
-                configurarEventosGerais();
-                
-                // 6. Configurar mensagem
-                configurarMensagemEpico();
-                
-                // 7. Configurar anel cósmico
-                configurarAnelCosmico();
-                
-                // 8. Configurar feliz aniversário
-                configurarFelizAniversario();
-                
-                // 9. Iniciar animações de scroll
-                iniciarAnimacoesScroll();
-            }, 1000);
-        }
-        
-        function configurarSistemaLoading() {
-            // Criar partículas do portal
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'portal-particle';
-                particle.style.cssText = `
-                    animation-duration: ${Math.random() * 10 + 5}s;
-                    animation-delay: ${Math.random() * 2}s;
-                    left: ${Math.random() * 100}%;
-                    top: ${Math.random() * 100}%;
-                `;
-                ELEMENTOS.portalParticles.appendChild(particle);
-            }
-            
-            // Simular carregamento
-            let progresso = 0;
-            const intervalo = setInterval(() => {
-                progresso += Math.random() * 10;
-                if (progresso > 100) {
-                    progresso = 100;
-                    clearInterval(intervalo);
-                    
-                    // Transição para introdução
-                    setTimeout(() => {
-                        finalizarLoading();
-                    }, 500);
-                }
-                
-                if (ELEMENTOS.loadingProgressBar) {
-                    ELEMENTOS.loadingProgressBar.style.width = `${progresso}%`;
-                }
-                
-                if (ELEMENTOS.loadingStats) {
-                    ELEMENTOS.loadingStats.textContent = 
-                        `SISTEMA: 22 ANOS DE LUZ | CARREGAMENTO: ${Math.round(progresso)}%`;
-                }
-                
-                MULTIVERSO.progressoCarregamento = progresso;
-            }, 100);
-        }
-        
-        function finalizarLoading() {
-            // Animar saída do loading
-            gsap.to(ELEMENTOS.loadingCosmic, {
-                opacity: 0,
-                duration: 1,
-                ease: 'power2.inOut',
-                onComplete: () => {
-                    ELEMENTOS.loadingCosmic.style.display = 'none';
-                    iniciarIntroducaoCinematografica();
-                }
-            });
-        }
-        
-        function configurarIntroducaoCinematografica() {
-            // Configurar eventos do botão
-            ELEMENTOS.cinematicButton.addEventListener('click', () => {
-                iniciarExperienciaCompleta();
-            });
-            
-            // Configurar letras flutuantes
-            configurarLetrasFlutuantes();
-        }
-        
-        function iniciarIntroducaoCinematografica() {
-            ELEMENTOS.introCinematic.classList.add('active');
-            
-            // Animar entrada
-            gsap.to(ELEMENTOS.introCinematic, {
-                opacity: 1,
-                duration: 1,
-                ease: 'power2.out'
-            });
-            
-            // Mostrar letterbox
-            setTimeout(() => {
-                document.querySelectorAll('.cinematic-letterbox').forEach(lb => {
-                    lb.classList.add('show');
-                });
-            }, 500);
-            
-            // Animar títulos
-            gsap.to(ELEMENTOS.cinematicTitle1, {
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                duration: 1.5,
-                delay: 1,
-                ease: 'back.out(1.7)'
-            });
-            
-            gsap.to(ELEMENTOS.cinematicTitle2, {
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                duration: 1.5,
-                delay: 1.5,
-                ease: 'back.out(1.7)'
-            });
-            
-            gsap.to(ELEMENTOS.cinematicTitle3, {
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                duration: 1.5,
-                delay: 2,
-                ease: 'back.out(1.7)'
-            });
-            
-            // Iniciar contagem regressiva
-            iniciarContagemRegressiva();
-        }
-        
-        function iniciarContagemRegressiva() {
-            let contagem = 5;
-            
-            ELEMENTOS.cinematicCountdown.textContent = contagem;
-            
-            // Animar entrada do contador
-            gsap.to(ELEMENTOS.cinematicCountdown, {
-                opacity: 1,
-                scale: 1,
-                duration: 0.5,
-                delay: 3,
-                ease: 'back.out(1.7)'
-            });
-            
-            gsap.to(ELEMENTOS.cinematicCountdownText, {
-                opacity: 1,
-                y: 0,
-                duration: 0.5,
-                delay: 3.2,
-                ease: 'power2.out'
-            });
-            
-            // Contagem regressiva
-            const intervalo = setInterval(() => {
-                contagem--;
-                ELEMENTOS.cinematicCountdown.textContent = contagem;
-                
-                // Efeito de escala
-                gsap.to(ELEMENTOS.cinematicCountdown, {
-                    scale: 1.2,
-                    duration: 0.1,
-                    yoyo: true,
-                    repeat: 1
-                });
-                
-                if (contagem <= 0) {
-                    clearInterval(intervalo);
-                    mostrarBotaoIniciar();
-                }
-            }, 1000);
-        }
-        
-        function mostrarBotaoIniciar() {
-            // Esconder contagem
-            gsap.to(ELEMENTOS.cinematicCountdown, {
-                opacity: 0,
-                scale: 0,
-                duration: 0.5,
-                ease: 'power2.in'
-            });
-            
-            gsap.to(ELEMENTOS.cinematicCountdownText, {
-                opacity: 0,
-                y: -20,
-                duration: 0.5,
-                ease: 'power2.in'
-            });
-            
-            // Mostrar botão
-            setTimeout(() => {
-                gsap.to(ELEMENTOS.cinematicButton, {
-                    opacity: 1,
-                    y: 0,
-                    duration: 1,
-                    ease: 'back.out(1.7)'
-                });
-            }, 500);
-        }
-        
-        function configurarLetrasFlutuantes() {
-            ELEMENTOS.floatingTexts.forEach((text, index) => {
-                // Posicionamento aleatório
-                const x = Math.random() * 80 + 10;
-                const y = Math.random() * 80 + 10;
-                
-                text.style.left = `${x}%`;
-                text.style.top = `${y}%`;
-                
-                // Animar entrada
-                setTimeout(() => {
-                    gsap.to(text, {
-                        opacity: 0.3,
-                        duration: 2,
-                        ease: 'power1.inOut',
-                        yoyo: true,
-                        repeat: -1,
-                        delay: index * 0.5
-                    });
-                }, 1000 + index * 1000);
-            });
-        }
-        
-        function iniciarExperienciaCompleta() {
-            // Efeitos de transição
-            sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicExplosion, 0.6);
-            
-            // Supernova
-            ELEMENTOS.supernovaExplosion.style.opacity = '1';
-            gsap.to(ELEMENTOS.supernovaExplosion, {
-                width: '1000px',
-                height: '1000px',
-                opacity: 0,
-                duration: 2,
-                ease: 'power2.out'
-            });
-            
-            // Esconder introdução
-            gsap.to(ELEMENTOS.introCinematic, {
-                opacity: 0,
-                duration: 1,
-                ease: 'power2.in',
-                onComplete: () => {
-                    ELEMENTOS.introCinematic.style.display = 'none';
-                    mostrarConteudoPrincipal();
-                }
-            });
-            
-            // Iniciar música
-            sistemaAudioCosmico.tocarTrilha('atto1');
-        }
-        
-        function mostrarConteudoPrincipal() {
-            ELEMENTOS.mainContent.style.display = 'block';
-            
-            // Animar entrada da seção hero
-            gsap.to(ELEMENTOS.heroCosmic, {
-                opacity: 1,
-                y: 0,
-                duration: 1.5,
-                ease: 'power2.out'
-            });
-            
-            // Ativar scroll
-            document.body.style.overflowY = 'auto';
-            
-            // Marcar usuário como interagido
-            MULTIVERSO.usuarioInteragiu = true;
-        }
-        
-        function configurarEventosGerais() {
-            // Eventos dos vídeos holográficos
-            ELEMENTOS.hologramPlayButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const videoId = button.dataset.video;
-                    const video = document.getElementById(videoId);
-                    
-                    if (video.paused) {
-                        video.play();
-                        button.style.opacity = '0';
-                        sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicMagic, 0.4);
-                    } else {
-                        video.pause();
-                        button.style.opacity = '1';
-                    }
-                });
-            });
-            
-            // Pausar vídeos quando não estiverem visíveis
-            const observerVideos = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    const video = entry.target;
-                    if (!entry.isIntersecting && !video.paused) {
-                        video.pause();
-                        const button = video.parentElement.querySelector('.hologram-play-button');
-                        if (button) button.style.opacity = '1';
-                    }
-                });
-            }, { threshold: 0.5 });
-            
-            document.querySelectorAll('.hologram-video').forEach(video => {
-                observerVideos.observe(video);
-            });
-            
-            // Teclas de atalho
-            document.addEventListener('keydown', (e) => {
-                // Espaço: pausar/play música
-                if (e.code === 'Space') {
-                    e.preventDefault();
-                    const silenciado = sistemaAudioCosmico.alternarSilencio();
-                    console.log(silenciado ? 'Áudio silenciado' : 'Áudio ativado');
-                }
-                
-                // F: tela cheia
-                if (e.code === 'KeyF' && e.altKey) {
-                    e.preventDefault();
-                    alternarTelaCheia();
-                }
-                
-                // ESC: sair de modais
-                if (e.code === 'Escape') {
-                    // Fechar overlay do anel se estiver aberto
-                    if (ELEMENTOS.cosmicRingOverlay.style.display === 'flex') {
-                        fecharOverlayAnel();
-                    }
-                    
-                    // Fechar feliz aniversário se estiver aberto
-                    if (ELEMENTOS.happyBirthdayGrande.classList.contains('active')) {
-                        fecharFelizAniversario();
-                    }
-                }
-                
-                // 1, 2, 3: alternar trilhas
-                if (e.code === 'Digit1') {
-                    sistemaAudioCosmico.tocarTrilha('atto1');
-                } else if (e.code === 'Digit2') {
-                    sistemaAudioCosmico.tocarTrilha('atto2');
-                } else if (e.code === 'Digit3') {
-                    sistemaAudioCosmico.tocarTrilha('atto3');
-                }
-            });
-        }
-        
-        // ===========================================
-// FUNÇÃO CONFIGURAR MENSAGEM ÉPICO - COMPLETA
+                     
+    // ===========================================
+// SISTEMA CÓSMICO DE 22 ANOS - COMPLETO E CORRIGIDO
 // ===========================================
 
-function configurarMensagemEpico() {
-    console.log('📝 Iniciando configuração da mensagem épica...');
-    
-    // 1. VERIFICAR ELEMENTOS EXISTENTES
-    // Tentar encontrar o elemento messageText de várias formas
-    let messageTextElement = document.getElementById('messageText');
-    
-    if (!messageTextElement) {
-        console.warn('⚠️ Elemento messageText não encontrado pelo ID, buscando por classe...');
+// Instanciar todos os sistemas
+let sistemaAudioCosmico;
+let sistemaParticulasCosmico;
+let sistemaCursor;
+let sistemaGaleria;
+let sistemaTimeline;
+let sistemaVideos;
+let sistemaRevelacaoAnel;
+let sistemaScroll;
+let sistemaAnimacoes;
+let sistemaCarregamento;
+
+// ===========================================
+// SISTEMA DE VÍDEOS HOLOGRÁFICOS
+// ===========================================
+
+class SistemaVideosHolograficos {
+    constructor() {
+        this.videos = [
+            ELEMENTOS.hologramVideo1,
+            ELEMENTOS.hologramVideo2,
+            ELEMENTOS.hologramVideo3
+        ];
+        this.players = ELEMENTOS.hologramPlayers;
+        this.videoAtivo = null;
         
-        // Tentar encontrar por classe
-        const messageTextByClass = document.querySelector('.message-text');
-        if (messageTextByClass) {
-            messageTextElement = messageTextByClass;
-            // Garantir que tenha o ID correto
-            messageTextElement.id = 'messageText';
-            console.log('✅ Elemento encontrado por classe e ID atribuído');
-        }
+        this.inicializar();
     }
     
-    // 2. SE NÃO ENCONTRAR, CRIAR O ELEMENTO
-    if (!messageTextElement) {
-        console.warn('⚠️ Elemento messageText não encontrado, criando novo...');
+    inicializar() {
+        // Configurar eventos dos botões de play
+        ELEMENTOS.hologramPlayButtons.forEach((button, index) => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleVideo(this.videos[index], button);
+            });
+        });
         
-        // Encontrar o container da mensagem
-        const messageHologram = document.querySelector('.message-hologram');
+        // Configurar eventos dos players
+        this.players.forEach((player, index) => {
+            player.addEventListener('click', () => {
+                this.abrirPlayerFullscreen(this.videos[index]);
+            });
+            
+            player.addEventListener('mouseenter', () => {
+                this.efeitoHover(player);
+            });
+        });
         
-        if (messageHologram) {
-            // Criar o elemento
-            messageTextElement = document.createElement('div');
-            messageTextElement.className = 'message-text selectable-text';
-            messageTextElement.id = 'messageText';
+        // Configurar eventos dos vídeos
+        this.videos.forEach(video => {
+            video.addEventListener('play', () => {
+                sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicMagic, 0.3);
+            });
             
-            // Encontrar onde inserir (antes da assinatura)
-            const signatureElement = messageHologram.querySelector('.message-signature');
-            
-            if (signatureElement) {
-                // Inserir antes da assinatura
-                messageHologram.insertBefore(messageTextElement, signatureElement);
-                console.log('✅ Elemento criado e inserido antes da assinatura');
-            } else {
-                // Inserir no final do container
-                messageHologram.appendChild(messageTextElement);
-                console.log('✅ Elemento criado e adicionado ao final do container');
-            }
-            
-            // Criar título se não existir
-            if (!messageHologram.querySelector('.message-title')) {
-                const titleElement = document.createElement('h2');
-                titleElement.className = 'message-title';
-                titleElement.textContent = 'Para Você, Diolinda';
-                messageHologram.insertBefore(titleElement, messageTextElement);
-                console.log('✅ Título da mensagem criado');
-            }
+            video.addEventListener('ended', () => {
+                video.currentTime = 0;
+                video.play();
+            });
+        });
+    }
+    
+    toggleVideo(video, button) {
+        if (video.paused) {
+            video.play();
+            button.style.opacity = '0';
+            sistemaAudioCosmico.fadeOutTudo(1);
         } else {
-            console.error('❌ Container .message-hologram não encontrado! Não foi possível criar messageText');
-            return false;
+            video.pause();
+            button.style.opacity = '1';
         }
     }
     
-    // 3. ATUALIZAR REFERÊNCIA NO OBJETO ELEMENTOS
-    if (messageTextElement) {
-        ELEMENTOS.messageText = messageTextElement;
-        console.log('✅ Referência de messageText atualizada no objeto ELEMENTOS');
+    efeitoHover(player) {
+        // Efeito de partículas ao hover
+        const rect = player.getBoundingClientRect();
+        const centroX = rect.left + rect.width / 2;
+        const centroY = rect.top + rect.height / 2;
+        
+        sistemaParticulasCosmico.criarExplosao(centroX, centroY, 10, 'nebulosa', 0.2);
     }
     
-    // 4. DEFINIR CONTEÚDO DA MENSAGEM
-    if (ELEMENTOS.messageText) {
-        try {
-            // Formatar a mensagem épica com HTML
-            const mensagemFormatada = MULTIVERSO.mensagemEpico
-                .replace(/\n\n/g, '</p><p>')
-                .replace(/\n/g, '<br>');
-            
-            ELEMENTOS.messageText.innerHTML = `
-                <div class="message-paragraph">
-                    <p>${mensagemFormatada}</p>
-                </div>
-            `;
-            
-            console.log('✅ Conteúdo da mensagem definido com sucesso');
-            console.log('📄 Tamanho da mensagem:', MULTIVERSO.mensagemEpico.length, 'caracteres');
-            
-        } catch (error) {
-            console.error('❌ Erro ao definir conteúdo da mensagem:', error);
-            
-            // Fallback: texto simples
-            ELEMENTOS.messageText.textContent = MULTIVERSO.mensagemEpico.substring(0, 500) + '...';
-            ELEMENTOS.messageText.innerHTML += '<br><br><em>(Mensagem completa disponível no código)</em>';
-        }
-    } else {
-        console.error('❌ ELEMENTOS.messageText ainda não definido após todas as tentativas!');
-        return false;
-    }
-    
-    // 5. CONFIGURAR ANIMAÇÃO DE ENTRADA
-    const configurarAnimacao = () => {
-        if (!ELEMENTOS.messageText) {
-            console.warn('⚠️ Aguardando elemento messageText para animação...');
-            setTimeout(configurarAnimacao, 100);
-            return;
-        }
+    abrirPlayerFullscreen(video) {
+        // Criar tela cheia personalizada
+        const fullscreen = document.createElement('div');
+        fullscreen.className = 'fullscreen-video-cosmico';
+        fullscreen.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            z-index: var(--z-dimension-infinity);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+        `;
         
-        // Garantir que está visível
-        ELEMENTOS.messageText.style.visibility = 'visible';
-        ELEMENTOS.messageText.style.display = 'block';
+        const videoClone = video.cloneNode(true);
+        videoClone.controls = true;
+        videoClone.autoplay = true;
+        videoClone.style.cssText = `
+            width: 90%;
+            height: 70%;
+            object-fit: contain;
+            border: 2px solid var(--aqua-planet);
+            border-radius: var(--radius-nebula);
+            box-shadow: 0 0 100px var(--aqua-planet);
+        `;
         
-        // Resetar estado inicial para animação
-        gsap.set(ELEMENTOS.messageText, {
-            opacity: 0,
-            y: 40,
-            scale: 0.95
-        });
+        const controles = document.createElement('div');
+        controles.style.cssText = `
+            margin-top: var(--space-supernova);
+            display: flex;
+            gap: var(--space-supernova);
+        `;
         
-        // Animar entrada
-        gsap.to(ELEMENTOS.messageText, {
+        const fechar = document.createElement('button');
+        fechar.innerHTML = 'FECHAR HOLOGRAMA';
+        fechar.style.cssText = `
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid var(--aqua-planet);
+            color: var(--aqua-planet);
+            padding: var(--space-quasar) var(--space-supernova);
+            font-family: var(--font-mono-cosmic);
+            font-size: var(--font-size-quantum);
+            cursor: pointer;
+            border-radius: var(--radius-pulsar);
+            transition: all var(--time-quasar) var(--ease-supernova);
+        `;
+        
+        // Montar estrutura
+        controles.appendChild(fechar);
+        fullscreen.appendChild(videoClone);
+        fullscreen.appendChild(controles);
+        document.body.appendChild(fullscreen);
+        
+        // Animações
+        gsap.to(fullscreen, {
             opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 1.8,
-            delay: 0.3,
-            ease: 'power2.out',
-            onComplete: () => {
-                console.log('✅ Animação da mensagem épica concluída');
-                
-                // Adicionar efeito de brilho sutil
-                gsap.to(ELEMENTOS.messageText, {
-                    duration: 4,
-                    ease: 'sine.inOut',
-                    repeat: -1,
-                    yoyo: true,
-                    css: {
-                        filter: 'brightness(1.1) drop-shadow(0 0 10px rgba(212, 175, 55, 0.3))'
-                    }
-                });
-                
-                // Criar partículas ao redor da mensagem
-                criarParticulasMensagem();
-            }
+            duration: 0.5,
+            ease: 'power2.out'
         });
         
-        // Animar parágrafos individualmente (efeito de digitação)
-        const paragraphs = ELEMENTOS.messageText.querySelectorAll('p');
-        paragraphs.forEach((p, index) => {
-            // Salvar texto original
-            const originalText = p.textContent;
-            p.textContent = '';
-            
-            // Animar aparecimento do texto
-            gsap.to(p, {
-                duration: 0.1,
-                delay: 0.5 + (index * 0.3),
-                onStart: () => {
-                    p.textContent = originalText;
-                    p.style.opacity = 0;
-                },
+        // Eventos
+        fechar.addEventListener('click', () => {
+            gsap.to(fullscreen, {
+                opacity: 0,
+                duration: 0.3,
+                ease: 'power2.in',
                 onComplete: () => {
-                    gsap.to(p, {
-                        opacity: 1,
-                        duration: 0.8,
-                        ease: 'power2.inOut'
-                    });
-                }
-            });
-        });
-    };
-    
-    // Iniciar animação com pequeno delay
-    setTimeout(configurarAnimacao, 100);
-    
-    // 6. ADICIONAR EVENT LISTENERS PARA INTERAÇÃO
-    if (ELEMENTOS.messageText) {
-        ELEMENTOS.messageText.addEventListener('mouseenter', () => {
-            // Efeito de hover
-            gsap.to(ELEMENTOS.messageText, {
-                duration: 0.3,
-                scale: 1.02,
-                ease: 'power2.out',
-                css: {
-                    boxShadow: '0 0 40px rgba(212, 175, 55, 0.2)',
-                    borderColor: 'rgba(212, 175, 55, 0.3)'
-                }
-            });
-            
-            // Efeito sonoro
-            if (sistemaAudioCosmico && !MULTIVERSO.silenciado) {
-                sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicMagic, 0.2);
-            }
-        });
-        
-        ELEMENTOS.messageText.addEventListener('mouseleave', () => {
-            // Reverter efeito de hover
-            gsap.to(ELEMENTOS.messageText, {
-                duration: 0.3,
-                scale: 1,
-                ease: 'power2.out',
-                css: {
-                    boxShadow: '0 0 20px rgba(212, 175, 55, 0.1)',
-                    borderColor: 'rgba(212, 175, 55, 0.1)'
+                    document.body.removeChild(fullscreen);
+                    sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicWhoosh, 0.4);
                 }
             });
         });
         
-        // Clique para ampliar mensagem
-        ELEMENTOS.messageText.addEventListener('click', (e) => {
-            if (e.target === ELEMENTOS.messageText || e.target.closest('.message-paragraph')) {
-                ampliarMensagemEpica();
+        fullscreen.addEventListener('click', (e) => {
+            if (e.target === fullscreen) {
+                fechar.click();
             }
         });
+        
+        // Teclado
+        const tecladoHandler = (e) => {
+            if (e.key === 'Escape') {
+                fechar.click();
+                document.removeEventListener('keydown', tecladoHandler);
+            }
+        };
+        
+        document.addEventListener('keydown', tecladoHandler);
     }
     
-    console.log('🎉 Configuração da mensagem épica concluída com sucesso!');
-    return true;
+    pausarTodos() {
+        this.videos.forEach(video => {
+            video.pause();
+        });
+        
+        // Restaurar botões de play
+        ELEMENTOS.hologramPlayButtons.forEach(button => {
+            button.style.opacity = '1';
+        });
+    }
 }
 
 // ===========================================
-// FUNÇÃO AUXILIAR: CRIAR PARTÍCULAS DA MENSAGEM
+// SISTEMA DE REVELAÇÃO DO ANEL
 // ===========================================
 
-function criarParticulasMensagem() {
-    if (!ELEMENTOS.messageText || !sistemaParticulasCosmico) return;
-    
-    const rect = ELEMENTOS.messageText.getBoundingClientRect();
-    
-    // Criar partículas ao redor do texto
-    for (let i = 0; i < 20; i++) {
-        const x = rect.left + Math.random() * rect.width;
-        const y = rect.top + Math.random() * rect.height;
+class SistemaRevelacaoAnel {
+    constructor() {
+        this.anelRevelado = false;
+        this.particulasAtivas = false;
         
-        sistemaParticulasCosmico.criarParticula(x, y, 'estelar', {
-            tamanho: Math.random() * 3 + 1,
-            vida: Math.random() * 200 + 100,
-            velocidadeX: (Math.random() - 0.5) * 0.5,
-            velocidadeY: (Math.random() - 0.5) * 0.5,
-            cor: ['var(--sun-gold)', 'var(--aqua-planet)', 'var(--ruby-star)'][Math.floor(Math.random() * 3)]
+        this.inicializar();
+    }
+    
+    inicializar() {
+        // Configurar botão de revelação
+        ELEMENTOS.ringRevealButton.addEventListener('click', () => {
+            this.revelarAnelCosmico();
+        });
+        
+        // Configurar botão de fechar
+        ELEMENTOS.ringCloseButton.addEventListener('click', () => {
+            this.fecharAnelCosmico();
+        });
+        
+        // Configurar overlay do anel
+        ELEMENTOS.cosmicRingOverlay.addEventListener('click', (e) => {
+            if (e.target === ELEMENTOS.cosmicRingOverlay) {
+                this.fecharAnelCosmico();
+            }
         });
     }
     
-    // Efeito contínuo sutil
-    setInterval(() => {
-        if (document.querySelector('.message-hologram:hover')) {
-            const rect = ELEMENTOS.messageText.getBoundingClientRect();
+    revelarAnelCosmico() {
+        // Mostrar overlay
+        ELEMENTOS.cosmicRingOverlay.style.display = 'flex';
+        
+        // Sequência de animações
+        const sequencia = gsap.timeline();
+        
+        sequencia
+            .to(ELEMENTOS.cosmicRingOverlay, {
+                opacity: 1,
+                duration: 0.8,
+                ease: 'power2.out'
+            })
+            .fromTo(ELEMENTOS.ringImageCosmic,
+                {
+                    scale: 0,
+                    rotationY: 180,
+                    opacity: 0
+                },
+                {
+                    scale: 1,
+                    rotationY: 0,
+                    opacity: 1,
+                    duration: 1.5,
+                    ease: 'back.out(1.7)'
+                },
+                '-=0.5'
+            )
+            .to(ELEMENTOS.ringMessageCosmic, {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: 'power2.out'
+            }, '-=0.8');
+        
+        // Efeitos especiais
+        sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicReveal, 0.8);
+        sistemaParticulasCosmico.criarVortex(
+            window.innerWidth / 2,
+            window.innerHeight / 2,
+            200,
+            'nebulosa'
+        );
+        
+        // Iniciar partículas orbitantes
+        this.iniciarParticulasAnel();
+        
+        this.anelRevelado = true;
+        this.particulasAtivas = true;
+    }
+    
+    fecharAnelCosmico() {
+        // Parar partículas
+        this.particulasAtivas = false;
+        
+        // Animar saída
+        gsap.to(ELEMENTOS.cosmicRingOverlay, {
+            opacity: 0,
+            duration: 0.5,
+            ease: 'power2.in',
+            onComplete: () => {
+                ELEMENTOS.cosmicRingOverlay.style.display = 'none';
+            }
+        });
+        
+        sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicWhoosh, 0.4);
+    }
+    
+    iniciarParticulasAnel() {
+        const criarParticulaOrbital = () => {
+            if (!this.particulasAtivas) return;
+            
+            const angulo = Math.random() * Math.PI * 2;
+            const distancia = 250 + Math.random() * 100;
+            const centroX = window.innerWidth / 2;
+            const centroY = window.innerHeight / 2;
+            
+            sistemaParticulasCosmico.criarParticula(
+                centroX + Math.cos(angulo) * distancia,
+                centroY + Math.sin(angulo) * distancia,
+                'estelar',
+                {
+                    velocidadeX: -Math.cos(angulo) * 0.8,
+                    velocidadeY: -Math.sin(angulo) * 0.8,
+                    vida: Math.random() * 300 + 200,
+                    tamanho: Math.random() * 2 + 1,
+                    atrito: 1,
+                    gravidade: 0
+                }
+            );
+            
+            // Agendar próxima partícula
+            setTimeout(criarParticulaOrbital, Math.random() * 200 + 50);
+        };
+        
+        // Criar partículas iniciais
+        for (let i = 0; i < 30; i++) {
+            setTimeout(() => {
+                criarParticulaOrbital();
+            }, i * 100);
+        }
+    }
+}
+
+// ===========================================
+// SISTEMA DE SCROLL E ANIMAÇÕES
+// ===========================================
+
+class SistemaScrollAnimacoes {
+    constructor() {
+        this.ultimoScrollY = 0;
+        this.secoes = [];
+        this.observers = [];
+        
+        this.inicializar();
+    }
+    
+    inicializar() {
+        // Coletar todas as seções
+        this.secoes = [
+            { elemento: ELEMENTOS.heroCosmic, nome: 'hero', trilha: 'atto1' },
+            { elemento: ELEMENTOS.galleryInterdimensional, nome: 'galeria', trilha: 'atto1' },
+            { elemento: ELEMENTOS.timelineTemporal, nome: 'timeline', trilha: 'atto2' },
+            { elemento: ELEMENTOS.holographicVideos, nome: 'videos', trilha: 'atto2' },
+            { elemento: ELEMENTOS.holographicMessage, nome: 'mensagem', trilha: 'atto3' },
+            { elemento: ELEMENTOS.cosmicRingReveal, nome: 'anel', trilha: 'atto3' },
+            { elemento: ELEMENTOS.cosmicFinal, nome: 'final', trilha: 'atto3' }
+        ];
+        
+        // Configurar Intersection Observers
+        this.configurarObservers();
+        
+        // Configurar eventos de scroll
+        window.addEventListener('scroll', () => this.atualizarScroll());
+        
+        // Configurar ScrollTrigger do GSAP
+        if (typeof ScrollTrigger !== 'undefined') {
+            this.configurarScrollTrigger();
+        }
+    }
+    
+    configurarObservers() {
+        // Observer para animações básicas
+        const observerBasico = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    
+                    // Efeito específico baseado na classe
+                    if (entry.target.classList.contains('animate-on-scroll')) {
+                        this.animarEntradaElemento(entry.target);
+                    }
+                    
+                    // Efeitos sonoros
+                    sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicWhoosh, 0.1);
+                }
+            });
+        }, {
+            threshold: 0.2,
+            rootMargin: '50px'
+        });
+        
+        // Aplicar observer a todos os elementos animáveis
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observerBasico.observe(el);
+        });
+        
+        // Observer para ativação de trilhas sonoras por seção
+        const observerTrilhas = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const secao = this.secoes.find(s => s.elemento === entry.target);
+                    if (secao && sistemaAudioCosmico.trilhaAtual !== secao.trilha) {
+                        sistemaAudioCosmico.tocarTrilha(secao.trilha);
+                    }
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+        
+        // Observar seções principais
+        this.secoes.forEach(secao => {
+            if (secao.elemento) {
+                observerTrilhas.observe(secao.elemento);
+            }
+        });
+        
+        this.observers.push(observerBasico, observerTrilhas);
+    }
+    
+    configurarScrollTrigger() {
+        // Animações com ScrollTrigger
+        
+        // Hero section - efeito parallax
+        gsap.to('.hero-portal', {
+            scale: 1.5,
+            scrollTrigger: {
+                trigger: '.hero-cosmic',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+        
+        // Gallery items - entrada em cascata
+        gsap.utils.toArray('.gallery-item-4d').forEach((item, i) => {
+            gsap.fromTo(item,
+                {
+                    y: 100,
+                    opacity: 0,
+                    rotationY: 20
+                },
+                {
+                    y: 0,
+                    opacity: 1,
+                    rotationY: 0,
+                    duration: 1,
+                    delay: i * 0.1,
+                    scrollTrigger: {
+                        trigger: item,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    }
+                }
+            );
+        });
+        
+        // Timeline nodes - entrada sequencial
+        gsap.utils.toArray('.timeline-node').forEach((node, i) => {
+            gsap.fromTo(node,
+                {
+                    x: i % 2 === 0 ? -100 : 100,
+                    opacity: 0
+                },
+                {
+                    x: 0,
+                    opacity: 1,
+                    duration: 1,
+                    scrollTrigger: {
+                        trigger: node,
+                        start: 'top 80%',
+                        toggleActions: 'play none none none'
+                    }
+                }
+            );
+        });
+        
+        // Efeito de parallax nas partículas
+        gsap.to('.particula-cosmica', {
+            y: (i, target) => -window.scrollY * 0.1,
+            ease: 'none',
+            scrollTrigger: {
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: true
+            }
+        });
+    }
+    
+    atualizarScroll() {
+        const scrollY = window.scrollY;
+        const delta = scrollY - this.ultimoScrollY;
+        this.ultimoScrollY = scrollY;
+        
+        // Efeitos baseados na velocidade do scroll
+        if (Math.abs(delta) > 10) {
+            this.efeitoScrollRapido(delta);
+        }
+        
+        // Atualizar indicador de progresso
+        this.atualizarProgressoScroll();
+    }
+    
+    efeitoScrollRapido(delta) {
+        // Criar partículas durante scroll rápido
+        if (Math.abs(delta) > 30) {
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            
+            sistemaParticulasCosmico.criarParticula(x, y, 'estelar', {
+                velocidadeY: delta * 0.1,
+                vida: 50,
+                tamanho: 2
+            });
+        }
+    }
+    
+    atualizarProgressoScroll() {
+        const alturaTotal = document.documentElement.scrollHeight - window.innerHeight;
+        const progresso = (window.scrollY / alturaTotal) * 100;
+        
+        // Atualizar indicador visual (opcional)
+        const indicador = document.getElementById('scrollProgress');
+        if (!indicador) return;
+        
+        indicador.style.width = `${progresso}%`;
+    }
+    
+    animarEntradaElemento(elemento) {
+        const animacao = elemento.dataset.animacao || 'fadeUp';
+        
+        switch(animacao) {
+            case 'fadeUp':
+                gsap.fromTo(elemento,
+                    { y: 50, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 1, ease: 'power2.out' }
+                );
+                break;
+                
+            case 'fadeLeft':
+                gsap.fromTo(elemento,
+                    { x: -50, opacity: 0 },
+                    { x: 0, opacity: 1, duration: 1, ease: 'power2.out' }
+                );
+                break;
+                
+            case 'fadeRight':
+                gsap.fromTo(elemento,
+                    { x: 50, opacity: 0 },
+                    { x: 0, opacity: 1, duration: 1, ease: 'power2.out' }
+                );
+                break;
+                
+            case 'scale':
+                gsap.fromTo(elemento,
+                    { scale: 0.8, opacity: 0 },
+                    { scale: 1, opacity: 1, duration: 1, ease: 'back.out(1.2)' }
+                );
+                break;
+                
+            default:
+                gsap.to(elemento, { opacity: 1, duration: 0.5 });
+        }
+    }
+    
+    destruir() {
+        this.observers.forEach(observer => observer.disconnect());
+        if (ScrollTrigger) {
+            ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+        }
+    }
+}
+
+// ===========================================
+// SISTEMA DE ANIMAÇÕES ESPECIAIS
+// ===========================================
+
+class SistemaAnimacoesEspeciais {
+    constructor() {
+        this.animacoesAtivas = [];
+        this.efeitosEspeciais = [];
+        
+        this.inicializar();
+    }
+    
+    inicializar() {
+        // Configurar animações automáticas
+        this.iniciarAnimacoesAutomaticas();
+        
+        // Configurar eventos de teclado para efeitos especiais
+        this.configurarTeclasDeAtalho();
+    }
+    
+    iniciarAnimacoesAutomaticas() {
+        // Animação da introdução
+        setTimeout(() => {
+            this.animarIntroducao();
+        }, 1000);
+        
+        // Efeitos periódicos
+        setInterval(() => {
+            this.efeitoEstrelaCadente();
+        }, 3000);
+        
+        setInterval(() => {
+            this.efeitoPulsar();
+        }, 5000);
+        
+        // Efeitos ao passar o mouse em áreas específicas
+        this.configurarEfeitosHover();
+    }
+    
+    animarIntroducao() {
+        if (!ELEMENTOS.introCinematic.classList.contains('active')) return;
+        
+        const timeline = gsap.timeline();
+        
+        // Letterboxes
+        timeline
+            .to('.cinematic-letterbox', {
+                y: 0,
+                duration: 1.5,
+                ease: 'power2.out',
+                stagger: 0.2
+            })
+            .fromTo('.cinematic-title',
+                { y: 100, opacity: 0 },
+                { y: 0, opacity: 1, duration: 1.5, stagger: 0.3, ease: 'back.out(1.2)' },
+                '-=1'
+            )
+            .fromTo('.cinematic-countdown',
+                { scale: 0, opacity: 0 },
+                { scale: 1, opacity: 1, duration: 1, ease: 'elastic.out(1, 0.5)' },
+                '+=0.5'
+            )
+            .fromTo('.cinematic-countdown-text',
+                { y: 20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.8 },
+                '-=0.5'
+            )
+            .fromTo('.cinematic-button',
+                { y: 50, opacity: 0 },
+                { y: 0, opacity: 1, duration: 1, ease: 'power2.out' },
+                '+=0.5'
+            );
+        
+        // Textos flutuantes
+        ELEMENTOS.floatingTexts.forEach((texto, i) => {
+            gsap.to(texto, {
+                opacity: 0.3,
+                duration: 2,
+                delay: i * 0.5,
+                yoyo: true,
+                repeat: -1,
+                ease: 'sine.inOut'
+            });
+        });
+    }
+    
+    efeitoEstrelaCadente() {
+        const x = Math.random() * window.innerWidth;
+        const comprimento = 100 + Math.random() * 100;
+        
+        const estrela = document.createElement('div');
+        estrela.style.cssText = `
+            position: fixed;
+            width: 2px;
+            height: ${comprimento}px;
+            background: linear-gradient(to bottom, transparent, var(--sun-gold), transparent);
+            top: -${comprimento}px;
+            left: ${x}px;
+            transform: rotate(${Math.random() * 30 - 15}deg);
+            pointer-events: none;
+            z-index: var(--z-dimension-5);
+            opacity: 0;
+        `;
+        
+        document.body.appendChild(estrela);
+        
+        gsap.to(estrela, {
+            y: window.innerHeight + comprimento,
+            opacity: 0.8,
+            duration: 1,
+            ease: 'power2.in',
+            onComplete: () => {
+                estrela.remove();
+            }
+        });
+        
+        sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicWhoosh, 0.1);
+    }
+    
+    efeitoPulsar() {
+        // Criar onda de pulsar
+        const pulsar = document.createElement('div');
+        pulsar.style.cssText = `
+            position: fixed;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            border: 2px solid var(--aqua-planet);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: var(--z-dimension-3);
+            opacity: 0.5;
+        `;
+        
+        document.body.appendChild(pulsar);
+        
+        gsap.to(pulsar, {
+            width: window.innerWidth * 2,
+            height: window.innerWidth * 2,
+            opacity: 0,
+            duration: 3,
+            ease: 'power2.out',
+            onComplete: () => {
+                pulsar.remove();
+            }
+        });
+    }
+    
+    configurarEfeitosHover() {
+        // Efeitos especiais ao passar o mouse em elementos importantes
+        const elementosEspeciais = [
+            '.hero-name',
+            '.hero-age',
+            '.gallery-title',
+            '.message-title',
+            '.final-title-cosmic'
+        ];
+        
+        elementosEspeciais.forEach(seletor => {
+            const elementos = document.querySelectorAll(seletor);
+            
+            elementos.forEach(elemento => {
+                elemento.addEventListener('mouseenter', () => {
+                    this.efeitoTextoBrillante(elemento);
+                });
+            });
+        });
+    }
+    
+    efeitoTextoBrillante(elemento) {
+        // Criar partículas de brilho
+        const rect = elemento.getBoundingClientRect();
+        const particulas = 20;
+        
+        for (let i = 0; i < particulas; i++) {
             const x = rect.left + Math.random() * rect.width;
             const y = rect.top + Math.random() * rect.height;
             
             sistemaParticulasCosmico.criarParticula(x, y, 'estelar', {
-                tamanho: Math.random() * 2 + 0.5,
-                vida: 60,
-                velocidadeX: (Math.random() - 0.5) * 0.3,
-                velocidadeY: (Math.random() - 0.5) * 0.3,
-                cor: 'var(--sun-gold)',
-                opacity: 0.3
+                velocidadeX: (Math.random() - 0.5) * 2,
+                velocidadeY: (Math.random() - 0.5) * 2,
+                vida: 30,
+                tamanho: 1
             });
         }
-    }, 500);
-}
-
-// ===========================================
-// FUNÇÃO AUXILIAR: AMPLIAR MENSAGEM ÉPICA
-// ===========================================
-
-function ampliarMensagemEpica() {
-    // Criar overlay para visualização ampliada
-    const overlay = document.createElement('div');
-    overlay.className = 'mensagem-ampliada-overlay';
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.95);
-        z-index: var(--z-dimension-infinity);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        opacity: 0;
-        backdrop-filter: blur(10px);
-    `;
-    
-    // Container da mensagem ampliada
-    const container = document.createElement('div');
-    container.className = 'mensagem-ampliada-container';
-    container.style.cssText = `
-        background: rgba(20, 20, 30, 0.9);
-        border: 3px solid var(--sun-gold);
-        border-radius: var(--radius-nebula);
-        padding: var(--space-blackhole);
-        max-width: 800px;
-        width: 90%;
-        max-height: 80vh;
-        overflow-y: auto;
-        box-shadow: 0 0 100px rgba(212, 175, 55, 0.4);
-        transform: scale(0.9);
-        opacity: 0;
-    `;
-    
-    // Título
-    const titulo = document.createElement('h2');
-    titulo.style.cssText = `
-        font-family: var(--font-cursive-supernova);
-        font-size: var(--font-size-nebula);
-        color: var(--sun-gold);
-        text-align: center;
-        margin-bottom: var(--space-supernova);
-        text-shadow: 0 0 20px var(--sun-gold);
-    `;
-    titulo.textContent = 'Mensagem Épica para Diolinda';
-    
-    // Conteúdo
-    const conteudo = document.createElement('div');
-    conteudo.className = 'mensagem-ampliada-conteudo';
-    conteudo.style.cssText = `
-        font-family: var(--font-nebula);
-        font-size: 1.3rem;
-        color: var(--quasar-ivory);
-        line-height: 1.8;
-        text-align: justify;
-        padding: var(--space-supernova);
-    `;
-    conteudo.innerHTML = MULTIVERSO.mensagemEpico.replace(/\n/g, '<br><br>');
-    
-    // Botão fechar
-    const fechar = document.createElement('button');
-    fechar.innerHTML = '×';
-    fechar.style.cssText = `
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: rgba(212, 175, 55, 0.2);
-        border: 2px solid var(--sun-gold);
-        color: var(--sun-gold);
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        font-size: 1.8rem;
-        cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: all var(--time-quasar) var(--ease-supernova);
-        z-index: 2;
-    `;
-    
-    // Montar
-    container.appendChild(titulo);
-    container.appendChild(conteudo);
-    overlay.appendChild(container);
-    overlay.appendChild(fechar);
-    document.body.appendChild(overlay);
-    
-    // Animações de entrada
-    gsap.to(overlay, {
-        opacity: 1,
-        duration: 0.4,
-        ease: 'power2.out'
-    });
-    
-    gsap.to(container, {
-        scale: 1,
-        opacity: 1,
-        duration: 0.6,
-        delay: 0.1,
-        ease: 'back.out(1.2)'
-    });
-    
-    // Efeito sonoro
-    if (sistemaAudioCosmico) {
-        sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicReveal, 0.6);
+        
+        // Efeito de brilho no texto
+        gsap.to(elemento, {
+            textShadow: '0 0 20px var(--sun-gold)',
+            duration: 0.3,
+            yoyo: true,
+            repeat: 1
+        });
     }
     
-    // Criar partículas
-    if (sistemaParticulasCosmico) {
+    configurarTeclasDeAtalho() {
+        document.addEventListener('keydown', (e) => {
+            // Efeitos especiais com teclas de função
+            switch(e.key) {
+                case '1':
+                    this.efeitoSupernova();
+                    break;
+                case '2':
+                    this.efeitoNebulosa();
+                    break;
+                case '3':
+                    this.efeitoBuracoNegro();
+                    break;
+                case '4':
+                    this.efeitoFogosDeArtificio();
+                    break;
+                case ' ':
+                    if (e.ctrlKey) {
+                        this.alternarTodasAnimacoes();
+                    }
+                    break;
+            }
+        });
+    }
+    
+    efeitoSupernova() {
+        // Explosão de supernova
+        sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicExplosion, 0.8);
+        
         sistemaParticulasCosmico.criarExplosao(
             window.innerWidth / 2,
             window.innerHeight / 2,
-            30,
-            'estelar',
-            0.5
+            200,
+            'supernova',
+            3
         );
+        
+        // Efeito de brilho na tela
+        const brilho = document.createElement('div');
+        brilho.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, var(--sun-gold) 0%, transparent 70%);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: var(--z-dimension-6);
+        `;
+        
+        document.body.appendChild(brilho);
+        
+        gsap.to(brilho, {
+            opacity: 0,
+            duration: 1,
+            onComplete: () => brilho.remove()
+        });
     }
     
-    // Eventos
-    fechar.addEventListener('click', () => fecharMensagemAmpliada(overlay));
+    efeitoNebulosa() {
+        // Criar efeito de nebulosa
+        const cores = ['var(--aqua-planet)', 'var(--violet-quasar)', 'var(--ruby-star)'];
+        
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                sistemaParticulasCosmico.criarVortex(
+                    Math.random() * window.innerWidth,
+                    Math.random() * window.innerHeight,
+                    100,
+                    'nebulosa'
+                );
+            }, i * 300);
+        }
+        
+        sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicMagic, 0.5);
+    }
     
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            fecharMensagemAmpliada(overlay);
+    efeitoBuracoNegro() {
+        // Efeito de buraco negro
+        const vortex = document.createElement('div');
+        vortex.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,0,0,0.9) 0%, black 100%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: var(--z-dimension-7);
+        `;
+        
+        document.body.appendChild(vortex);
+        
+        // Animar crescimento
+        gsap.to(vortex, {
+            width: window.innerWidth * 1.5,
+            height: window.innerWidth * 1.5,
+            duration: 2,
+            ease: 'power2.in',
+            onComplete: () => {
+                vortex.remove();
+            }
+        });
+        
+        // Efeito de distorção
+        gsap.to('body', {
+            filter: 'blur(5px)',
+            duration: 1,
+            yoyo: true,
+            repeat: 1
+        });
+        
+        sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicExplosion, 0.6);
+    }
+    
+    efeitoFogosDeArtificio() {
+        // Criar fogos de artifício
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * window.innerHeight;
+                
+                sistemaParticulasCosmico.criarExplosao(x, y, 100, 'supernova', 1.5);
+                sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicReveal, 0.4);
+            }, i * 200);
+        }
+    }
+    
+    alternarTodasAnimacoes() {
+        const animacoesAtivas = gsap.globalTimeline.getChildren();
+        
+        if (animacoesAtivas.length > 0) {
+            gsap.globalTimeline.pause();
+            console.log('⏸️ Todas as animações pausadas');
+        } else {
+            gsap.globalTimeline.resume();
+            console.log('▶️ Todas as animações retomadas');
+        }
+    }
+}
+
+// ===========================================
+// SISTEMA DE CARREGAMENTO
+// ===========================================
+
+ 
+// ===========================================
+// INICIALIZAÇÃO DO UNIVERSO - COMPLETA
+// ===========================================
+
+function inicializarUniversoCompleto() {
+    console.log('🌌 INICIALIZANDO UNIVERSO CÓSMICO COMPLETO...');
+    
+    // 1. Sistema de Carregamento (primeiro)
+    sistemaCarregamento = new SistemaCarregamento();
+    
+    // 2. Sistema de Áudio
+    sistemaAudioCosmico = new SistemaAudioCosmico();
+    
+    // 3. Sistema de Partículas
+    sistemaParticulasCosmico = new SistemaParticulasCosmico();
+    
+    // 4. Sistema de Cursor
+    if (UNIVERSO.cursorAtivo) {
+        sistemaCursor = new SistemaCursorInterdimensional();
+    }
+    
+    // 5. Sistema de Galeria
+    sistemaGaleria = new SistemaGaleriaInterdimensional();
+    
+    // 6. Sistema de Timeline
+    sistemaTimeline = new SistemaTimelineTemporal();
+    
+    // 7. Sistema de Vídeos
+    sistemaVideos = new SistemaVideosHolograficos();
+    
+    // 8. Sistema de Revelação do Anel
+    sistemaRevelacaoAnel = new SistemaRevelacaoAnel();
+    
+    // 9. Sistema de Scroll
+    sistemaScroll = new SistemaScrollAnimacoes();
+    
+    // 10. Sistema de Animações Especiais
+    sistemaAnimacoes = new SistemaAnimacoesEspeciais();
+    
+    // Configurar eventos globais
+    configurarEventosGlobaisCompletos();
+    
+    console.log('✨ TODOS OS SISTEMAS INICIALIZADOS!');
+    console.log(`🎉 PRONTO PARA CELEBRAR ${UNIVERSO.idade} ANOS DE ${UNIVERSO.nomeCompleto}!`);
+}
+
+function configurarEventosGlobaisCompletos() {
+    // Botão da introdução
+    ELEMENTOS.cinematicButton.addEventListener('click', () => {
+        // Transição para conteúdo principal
+        gsap.to(ELEMENTOS.introCinematic, {
+            opacity: 0,
+            duration: 1,
+            ease: 'power2.inOut',
+            onComplete: () => {
+                ELEMENTOS.introCinematic.style.display = 'none';
+                mostrarConteudoPrincipalCompleto();
+            }
+        });
+        
+        // Efeitos
+        sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicTransition, 0.7);
+        sistemaAudioCosmico.tocarTrilha('atto1');
+        
+        // Explosão de partículas
+        sistemaParticulasCosmico.criarExplosao(
+            window.innerWidth / 2,
+            window.innerHeight / 2,
+            200,
+            'estelar',
+            1.5
+        );
+    });
+    
+    // Botão Feliz Aniversário (tecla H)
+    document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'h') {
+            mostrarFelizAniversarioCompleto();
+        }
+        
+        // Tecla M para mute
+        if (e.key.toLowerCase() === 'm') {
+            const silenciado = sistemaAudioCosmico.alternarSilencio();
+            console.log(silenciado ? '🔇 Silenciado' : '🔊 Ativado');
+        }
+        
+        // Tecla F para tela cheia
+        if (e.key.toLowerCase() === 'f' && e.ctrlKey) {
+            alternarTelaCheiaCompleta();
         }
     });
     
-    // Teclado
-    const tecladoHandler = (e) => {
-        if (e.key === 'Escape') {
-            fecharMensagemAmpliada(overlay);
-            document.removeEventListener('keydown', tecladoHandler);
+    // Interação do usuário para áudio
+    document.addEventListener('click', () => {
+        if (!MULTIVERSO.usuarioInteragiu) {
+            MULTIVERSO.usuarioInteragiu = true;
+            sistemaAudioCosmico.tocarTrilha('atto1');
         }
-    };
+    });
+}
+
+function mostrarConteudoPrincipalCompleto() {
+    // Mostrar conteúdo principal
+    ELEMENTOS.mainContent.style.display = 'block';
     
-    document.addEventListener('keydown', tecladoHandler);
+    // Animar entrada
+    gsap.fromTo(ELEMENTOS.mainContent,
+        { opacity: 0 },
+        { opacity: 1, duration: 1, ease: 'power2.out' }
+    );
     
-    function fecharMensagemAmpliada(elemento) {
-        gsap.to(elemento, {
+    // Animar hero section
+    gsap.fromTo(ELEMENTOS.heroCosmic,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 1.5, delay: 0.5, ease: 'power2.out' }
+    );
+    
+    // Ativar ScrollTrigger
+    if (typeof ScrollTrigger !== 'undefined') {
+        ScrollTrigger.refresh();
+    }
+    
+    // Iniciar efeitos contínuos
+    sistemaAnimacoes.iniciarAnimacoesAutomaticas();
+}
+
+function mostrarFelizAniversarioCompleto() {
+    // Alternar visibilidade
+    if (ELEMENTOS.happyBirthdayGrande.classList.contains('active')) {
+        gsap.to(ELEMENTOS.happyBirthdayGrande, {
             opacity: 0,
-            duration: 0.3,
-            ease: 'power2.in',
+            duration: 0.5,
             onComplete: () => {
-                if (elemento.parentNode) {
-                    elemento.parentNode.removeChild(elemento);
-                }
-                if (sistemaAudioCosmico) {
-                    sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicWhoosh, 0.3);
-                }
+                ELEMENTOS.happyBirthdayGrande.classList.remove('active');
             }
+        });
+    } else {
+        ELEMENTOS.happyBirthdayGrande.classList.add('active');
+        
+        gsap.fromTo(ELEMENTOS.happyBirthdayGrande,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.8, ease: 'power2.out' }
+        );
+        
+        // Efeitos especiais
+        sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicExplosion, 0.7);
+        sistemaParticulasCosmico.criarExplosao(
+            window.innerWidth / 2,
+            window.innerHeight / 2,
+            300,
+            'supernova',
+            2
+        );
+        
+        // Criar confete
+        criarConfeteAniversarioCompleto();
+    }
+}
+
+function criarConfeteAniversarioCompleto() {
+    const cores = [
+        'var(--sun-gold)',
+        'var(--ruby-star)',
+        'var(--aqua-planet)',
+        'var(--violet-quasar)',
+        'var(--emerald-planet)'
+    ];
+    
+    for (let i = 0; i < 200; i++) {
+        const confete = document.createElement('div');
+        confete.className = 'confetti-piece';
+        confete.style.cssText = `
+            position: absolute;
+            width: ${Math.random() * 10 + 5}px;
+            height: ${Math.random() * 10 + 5}px;
+            background: ${cores[Math.floor(Math.random() * cores.length)]};
+            top: -20px;
+            left: ${Math.random() * 100}%;
+            border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+            opacity: 0;
+        `;
+        
+        ELEMENTOS.happyBirthdayConfetti.appendChild(confete);
+        
+        // Animar
+        anime({
+            targets: confete,
+            translateY: window.innerHeight + 100,
+            translateX: (Math.random() - 0.5) * 200,
+            rotate: Math.random() * 720,
+            opacity: [0, 1, 0],
+            duration: Math.random() * 3000 + 2000,
+            delay: Math.random() * 500,
+            easing: 'easeInOutSine',
+            complete: () => confete.remove()
         });
     }
 }
 
+function alternarTelaCheiaCompleta() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.log(`Erro tela cheia: ${err.message}`);
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
+
 // ===========================================
-// FUNÇÃO PARA VERIFICAR SEÇÃO DE MENSAGEM
+// INICIALIZAR QUANDO A PÁGINA CARREGAR
 // ===========================================
 
-function verificarSecaoMensagem() {
-    console.log('🔍 Verificando seção de mensagem...');
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('📄 DOM Carregado - Iniciando sistemas...');
     
-    const secaoMensagem = document.getElementById('holographicMessage');
-    
-    if (!secaoMensagem) {
-        console.error('❌ Seção holographicMessage não encontrada!');
-        return false;
+    // Verificar dependências
+    if (typeof gsap === 'undefined') {
+        console.error('❌ GSAP não carregado!');
+        return;
     }
     
-    console.log('✅ Seção holographicMessage encontrada');
+    // Registrar plugins GSAP
+    if (typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+    }
     
-    // Verificar elementos internos
-    const elementos = [
-        { selector: '.message-hologram', name: 'Container da mensagem' },
-        { selector: '.message-title', name: 'Título da mensagem' },
-        { selector: '.message-text', name: 'Texto da mensagem' },
-        { selector: '.message-signature', name: 'Assinatura' }
-    ];
+    // Inicializar universo completo
+    setTimeout(() => {
+        inicializarUniversoCompleto();
+    }, 100);
+});
+
+// Fallback para garantir inicialização
+window.addEventListener('load', () => {
+    console.log('🖼️ Página totalmente carregada');
     
-    elementos.forEach(item => {
-        const element = secaoMensagem.querySelector(item.selector);
-        if (element) {
-            console.log(`✅ ${item.name}: encontrado`);
-        } else {
-            console.warn(`⚠️ ${item.name}: não encontrado`);
-        }
-    });
-    
-    return true;
-}
-            ELEMENTOS.messageText.textContent = MULTIVERSO.mensagemEpico;
-            
-        function configurarAnelCosmico() {
-            ELEMENTOS.ringRevealButton.addEventListener('click', () => {
-                revelarAnelCosmico();
-            });
-            
-            ELEMENTOS.ringCloseButton.addEventListener('click', () => {
-                fecharOverlayAnel();
-            });
-            
-            // Criar partículas para o anel
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'ring-particle-cosmic';
-                particle.style.cssText = `
-                    animation-duration: ${Math.random() * 20 + 10}s;
-                    animation-delay: ${Math.random() * 5}s;
-                    background: ${i % 3 === 0 ? 'var(--sun-gold)' : i % 3 === 1 ? 'var(--red-giant)' : 'var(--aqua-planet)'};
-                `;
-                ELEMENTOS.ringParticlesCosmic.appendChild(particle);
-            }
-        }
-        
-        function revelarAnelCosmico() {
-            MULTIVERSO.anelRevelado = true;
-            
-            // Efeitos
-            sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicReveal, 0.7);
-            sistemaParticulasCosmico.criarExplosao(
-                window.innerWidth / 2,
-                window.innerHeight / 2,
-                100,
-                'supernova',
-                1
-            );
-            
-            // Mostrar overlay
-            ELEMENTOS.cosmicRingOverlay.style.display = 'flex';
-            
-            gsap.to(ELEMENTOS.cosmicRingOverlay, {
-                opacity: 1,
-                duration: 0.5,
-                ease: 'power2.out'
-            });
-            
-            gsap.to(ELEMENTOS.ringImageCosmic, {
-                scale: 1,
-                rotationY: 360,
-                duration: 2,
-                ease: 'back.out(1.7)'
-            });
-            
-            gsap.to(ELEMENTOS.ringMessageCosmic, {
-                opacity: 1,
-                y: 0,
-                duration: 1,
-                delay: 0.5,
-                ease: 'power2.out'
-            });
-            
-            // Trocar para trilha especial
-            sistemaAudioCosmico.tocarTrilha('atto3');
-        }
-        
-        function fecharOverlayAnel() {
-            gsap.to(ELEMENTOS.cosmicRingOverlay, {
-                opacity: 0,
-                duration: 0.3,
-                ease: 'power2.in',
-                onComplete: () => {
-                    ELEMENTOS.cosmicRingOverlay.style.display = 'none';
-                    sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicWhoosh, 0.3);
-                }
-            });
-        }
-        
-        function configurarFelizAniversario() {
-            // Mostrar ao chegar na seção final
-            const observerFinal = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && !MULTIVERSO.felizAniversarioMostrado) {
-                        setTimeout(() => {
-                            mostrarFelizAniversario();
-                        }, 1000);
-                        MULTIVERSO.felizAniversarioMostrado = true;
-                    }
-                });
-            }, { threshold: 0.5 });
-            
-            observerFinal.observe(ELEMENTOS.cosmicFinal);
-            
-            // Criar confetes
-            criarConfetesAniversario();
-        }
-        
-        function criarConfetesAniversario() {
-            const cores = [
-                'var(--sun-gold)',
-                'var(--red-giant)',
-                'var(--aqua-planet)',
-                'var(--ruby-star)',
-                'var(--violet-quasar)',
-                'var(--emerald-planet)'
-            ];
-            
-            for (let i = 0; i < 200; i++) {
-                const confete = document.createElement('div');
-                confete.className = 'confetti-piece';
-                confete.style.cssText = `
-                    left: ${Math.random() * 100}%;
-                    background: ${cores[Math.floor(Math.random() * cores.length)]};
-                    animation-duration: ${Math.random() * 5 + 3}s;
-                    animation-delay: ${Math.random() * 2}s;
-                    width: ${Math.random() * 10 + 5}px;
-                    height: ${Math.random() * 10 + 5}px;
-                    border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
-                `;
-                ELEMENTOS.happyBirthdayConfetti.appendChild(confete);
-            }
-        }
-        
-        function mostrarFelizAniversario() {
-            sistemaAudioCosmico.fadeOutTudo();
-            sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicExplosion, 0.8);
-            
-            ELEMENTOS.happyBirthdayGrande.classList.add('active');
-            
-            gsap.to(ELEMENTOS.happyBirthdayGrande, {
-                opacity: 1,
-                duration: 1,
-                ease: 'power2.out'
-            });
-            
-            // Fogos de artifício
-            for (let i = 0; i < 20; i++) {
-                setTimeout(() => {
-                    const x = Math.random() * window.innerWidth;
-                    const y = Math.random() * window.innerHeight;
-                    
-                    const firework = document.createElement('div');
-                    firework.className = 'firework';
-                    firework.style.cssText = `
-                        left: ${x}px;
-                        top: ${y}px;
-                        background: ${Math.random() > 0.5 ? 'var(--sun-gold)' : 'var(--ruby-star)'};
-                    `;
-                    ELEMENTOS.finalFireworks.appendChild(firework);
-                    
-                    gsap.to(firework, {
-                        scale: 20,
-                        opacity: 0,
-                        duration: 1,
-                        ease: 'power2.out',
-                        onComplete: () => {
-                            firework.remove();
-                        }
-                    });
-                }, i * 200);
-            }
-            
-            // Configurar fechamento
-            ELEMENTOS.happyBirthdayGrande.addEventListener('click', () => {
-                fecharFelizAniversario();
-            });
-            
-            // Fechar automaticamente após 10 segundos
-            setTimeout(() => {
-                if (ELEMENTOS.happyBirthdayGrande.classList.contains('active')) {
-                    fecharFelizAniversario();
-                }
-            }, 10000);
-        }
-        
-        function fecharFelizAniversario() {
-            gsap.to(ELEMENTOS.happyBirthdayGrande, {
-                opacity: 0,
-                duration: 0.5,
-                ease: 'power2.in',
-                onComplete: () => {
-                    ELEMENTOS.happyBirthdayGrande.classList.remove('active');
-                    sistemaAudioCosmico.tocarTrilha('atto3');
-                }
-            });
-        }
-        
-        function iniciarAnimacoesScroll() {
-            // Configurar ScrollTrigger
-            gsap.registerPlugin(ScrollTrigger);
-            
-            // Animação para elementos com classe animate-on-scroll
-            const elementosAnimaveis = document.querySelectorAll('.animate-on-scroll');
-            
-            elementosAnimaveis.forEach(elemento => {
-                gsap.fromTo(elemento,
-                    {
-                        opacity: 0,
-                        y: 50
-                    },
-                    {
-                        opacity: 1,
-                        y: 0,
-                        duration: 1,
-                        ease: 'power2.out',
-                        scrollTrigger: {
-                            trigger: elemento,
-                            start: 'top 85%',
-                            toggleActions: 'play none none none',
-                            once: true
-                        }
-                    }
-                );
-            });
-            
-            // Efeito parallax para algumas seções
-            gsap.to('.hero-portal', {
-                y: () => window.innerHeight * 0.1,
-                ease: 'none',
-                scrollTrigger: {
-                    trigger: '.hero-cosmic',
-                    start: 'top top',
-                    end: 'bottom top',
-                    scrub: true
-                }
-            });
-            
-            // Trocar trilhas baseado na seção
-            const secoes = [
-                { seletor: '.hero-cosmic', trilha: 'atto1' },
-                { seletor: '.gallery-interdimensional', trilha: 'atto2' },
-                { seletor: '.holographic-message', trilha: 'atto3' }
-            ];
-            
-            secoes.forEach((sec, index) => {
-                ScrollTrigger.create({
-                    trigger: sec.seletor,
-                    start: 'top center',
-                    end: 'bottom center',
-                    onEnter: () => {
-                        sistemaAudioCosmico.tocarTrilha(sec.trilha);
-                    },
-                    onEnterBack: () => {
-                        sistemaAudioCosmico.tocarTrilha(sec.trilha);
-                    }
-                });
-            });
-        }
-        
-        function alternarTelaCheia() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Erro ao tentar tela cheia: ${err.message}`);
-                });
-                MULTIVERSO.telaCheia = true;
-            } else {
-                document.exitFullscreen();
-                MULTIVERSO.telaCheia = false;
-            }
-        }
-        
-        // ===========================================
-        // FUNÇÕES DE UTILIDADE
-        // ===========================================
-        
-        function formatarNumero(num) {
-            return num < 10 ? `0${num}` : `${num}`;
-        }
-        
-        function carregarImagem(url) {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = () => resolve(img);
-                img.onerror = reject;
-                img.src = url;
-            });
-        }
-        
-        function criarElemento(tag, classes, texto, atributos) {
-            const elemento = document.createElement(tag);
-            if (classes) elemento.className = classes;
-            if (texto) elemento.textContent = texto;
-            if (atributos) {
-                Object.keys(atributos).forEach(key => {
-                    elemento.setAttribute(key, atributos[key]);
-                });
-            }
-            return elemento;
-        }
-        
-        function gerarCorAleatoria() {
-            const cores = [
-                'var(--sun-gold)',
-                'var(--red-giant)',
-                'var(--aqua-planet)',
-                'var(--ruby-star)',
-                'var(--violet-quasar)',
-                'var(--emerald-planet)',
-                'var(--purple-nebula)',
-                'var(--supernova-yellow)'
-            ];
-            return cores[Math.floor(Math.random() * cores.length)];
-        }
-        
-        // ===========================================
-        // EXPORTAR PARA ESCOPO GLOBAL
-        // ===========================================
-        
-        window.UNIVERSO = UNIVERSO;
-        window.MULTIVERSO = MULTIVERSO;
-        window.ELEMENTOS = ELEMENTOS;
-        window.sistemaAudioCosmico = sistemaAudioCosmico;
-        window.sistemaParticulasCosmico = sistemaParticulasCosmico;
-        window.sistemaCursor = sistemaCursor;
-        
-        console.log('🌌 SISTEMA CÓSMICO DE 22 ANOS INICIALIZADO 🌌');
-        console.log(`✨ Homenagem para: ${UNIVERSO.nomeCompleto}`);
-        console.log(`🎂 ${UNIVERSO.idade} anos de luz`);
-        console.log(`📅 ${UNIVERSO.dataAniversario}`);
-    </script>
+    // Verificar se já foi inicializado
+    if (!sistemaCarregamento) {
+        console.log('⚠️ Inicializando via window.load...');
+        inicializarUniversoCompleto();
+    }
+});
+
+// Exportar para debugging
+window.SISTEMAS = {
+    audio: () => sistemaAudioCosmico,
+    particulas: () => sistemaParticulasCosmico,
+    cursor: () => sistemaCursor,
+    galeria: () => sistemaGaleria,
+    timeline: () => sistemaTimeline,
+    videos: () => sistemaVideos,
+    anel: () => sistemaRevelacaoAnel,
+    scroll: () => sistemaScroll,
+    animacoes: () => sistemaAnimacoes,
+    carregamento: () => sistemaCarregamento
+};
+
+    console.log('✅ Script Cósmico Completo carregado!');
+    console.log('✅ Sistema Cósmico de 22 Anos carregado!');
+    console.log('✨ Preparando experiência para:', UNIVERSO.nomeCompleto);
+    console.log('🎂 Celebrando:', UNIVERSO.idade, 'anos de luz');
+ 
+</script>
 </body>
 </html>
