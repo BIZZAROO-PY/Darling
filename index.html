@@ -7036,322 +7036,467 @@ Com todo amor dos múltiplos universos,`,
         // ===========================================
         
         class SistemaCarregamento {
-            constructor() {
-                this.progresso = 0;
-                this.total = 100;
-                this.carregado = 0;
-                this.recursos = [];
-                this.carregamentoCompleto = false;
-                
-                this.inicializar();
+    constructor() {
+        this.progresso = 0;
+        this.total = 0; // Iniciar em 0 e calcular dinamicamente
+        this.carregado = 0;
+        this.recursos = [];
+        this.carregamentoCompleto = false;
+        this.recursosComErro = 0;
+        this.timeoutAtivado = false;
+        
+        this.inicializar();
+    }
+    
+    inicializar() {
+        this.registrarRecursos();
+        this.calcularTotalReal();
+        this.iniciarCarregamento();
+    }
+    
+    registrarRecursos() {
+        // Limpar array
+        this.recursos = [];
+        
+        // 1. Recursos de script (já carregados via CDN)
+        this.adicionarRecurso('fontes-google', 3, 'script');
+        this.adicionarRecurso('gsap', 3, 'script');
+        this.adicionarRecurso('threejs', 3, 'script');
+        this.adicionarRecurso('animejs', 2, 'script');
+        this.adicionarRecurso('particlesjs', 2, 'script');
+        this.adicionarRecurso('howler', 2, 'script');
+        
+        // 2. Imagens da galeria (27 imagens)
+        for (let i = 1; i <= UNIVERSO.totalImagens; i++) {
+            this.adicionarRecurso(`imagem-${i}`, 1, 'imagem');
+        }
+        
+        // 3. Vídeos (3 vídeos)
+        for (let i = 1; i <= 3; i++) {
+            this.adicionarRecurso(`video-${i}`, 2, 'video');
+        }
+        
+        // 4. Áudios (9 áudios conforme seu HTML)
+        for (let i = 1; i <= 9; i++) {
+            this.adicionarRecurso(`audio-${i}`, 1, 'audio');
+        }
+        
+        // 5. Imagem do anel
+        this.adicionarRecurso('anel-imagem', 1, 'imagem');
+        
+        // 6. Recursos do sistema (base)
+        this.adicionarRecurso('sistema-css', 5, 'sistema');
+        this.adicionarRecurso('sistema-html', 5, 'sistema');
+    }
+    
+    adicionarRecurso(nome, peso, tipo) {
+        const recurso = {
+            nome: nome,
+            peso: peso,
+            tipo: tipo,
+            carregado: false,
+            comErro: false
+        };
+        this.recursos.push(recurso);
+    }
+    
+    calcularTotalReal() {
+        // Calcular total baseado nos pesos dos recursos
+        this.total = this.recursos.reduce((soma, recurso) => soma + recurso.peso, 0);
+        
+        // Adicionar um buffer de 5% para compensar recursos não contabilizados
+        this.totalBuffer = Math.floor(this.total * 1.05);
+        
+        console.log(`Total de recursos: ${this.recursos.length}`);
+        console.log(`Peso total: ${this.total}`);
+        console.log(`Total com buffer: ${this.totalBuffer}`);
+    }
+    
+    iniciarCarregamento() {
+        // Atualizar display inicial
+        this.atualizarDisplay();
+        
+        // Carregar recursos
+        this.carregarRecursos();
+        
+        // Iniciar monitoramento
+        this.iniciarMonitoramento();
+        
+        // Timeout de segurança
+        this.configurarTimeout();
+    }
+    
+    carregarRecursos() {
+        // 1. Recursos de script (considerar como carregados)
+        setTimeout(() => {
+            this.marcarRecursosCarregados(['fontes-google', 'gsap', 'threejs', 'animejs', 'particlesjs', 'howler']);
+        }, 100);
+        
+        // 2. Carregar imagens da galeria
+        for (let i = 1; i <= UNIVERSO.totalImagens; i++) {
+            const numeroFormatado = String(i).padStart(2, '0');
+            const caminhoImagem = `${UNIVERSO.caminhoBaseImagens}${numeroFormatado}${UNIVERSO.extensaoImagem}`;
+            
+            const img = new Image();
+            img.onload = () => this.recursoCarregado(`imagem-${i}`, true);
+            img.onerror = () => this.recursoCarregado(`imagem-${i}`, false);
+            img.src = caminhoImagem;
+            
+            // Timeout individual para imagem
+            setTimeout(() => {
+                if (!this.getRecurso(`imagem-${i}`).carregado) {
+                    this.recursoCarregado(`imagem-${i}`, false);
+                }
+            }, 3000);
+        }
+        
+        // 3. Carregar vídeos (metadados apenas)
+        const videos = [
+            {id: 1, element: ELEMENTOS.hologramVideo1},
+            {id: 2, element: ELEMENTOS.hologramVideo2},
+            {id: 3, element: ELEMENTOS.hologramVideo3}
+        ];
+        
+        videos.forEach(video => {
+            const v = video.element;
+            if (v.readyState >= 1) { // HAVE_ENOUGH_DATA
+                this.recursoCarregado(`video-${video.id}`, true);
+            } else {
+                v.addEventListener('loadedmetadata', () => this.recursoCarregado(`video-${video.id}`, true));
+                v.addEventListener('error', () => this.recursoCarregado(`video-${video.id}`, false));
+            }
+        });
+        
+        // 4. Carregar áudios
+        const audios = [
+            {id: 1, element: ELEMENTOS.cosmicTrack1},
+            {id: 2, element: ELEMENTOS.cosmicTrack2},
+            {id: 3, element: ELEMENTOS.cosmicTrack3},
+            {id: 4, element: ELEMENTOS.cosmicHeartbeat},
+            {id: 5, element: ELEMENTOS.cosmicTransition},
+            {id: 6, element: ELEMENTOS.cosmicReveal},
+            {id: 7, element: ELEMENTOS.cosmicExplosion},
+            {id: 8, element: ELEMENTOS.cosmicWhoosh},
+            {id: 9, element: ELEMENTOS.cosmicMagic}
+        ];
+        
+        audios.forEach(audio => {
+            const a = audio.element;
+            if (a.readyState >= 1) {
+                this.recursoCarregado(`audio-${audio.id}`, true);
+            } else {
+                a.addEventListener('loadedmetadata', () => this.recursoCarregado(`audio-${audio.id}`, true));
+                a.addEventListener('error', () => this.recursoCarregado(`audio-${audio.id}`, false));
+            }
+        });
+        
+        // 5. Carregar imagem do anel
+        const imgAnel = new Image();
+        imgAnel.onload = () => this.recursoCarregado('anel-imagem', true);
+        imgAnel.onerror = () => this.recursoCarregado('anel-imagem', false);
+        imgAnel.src = 'Anel.jpeg';
+        
+        // 6. Sistema CSS/HTML (considerar carregado)
+        setTimeout(() => {
+            this.recursoCarregado('sistema-css', true);
+            this.recursoCarregado('sistema-html', true);
+        }, 500);
+    }
+    
+    getRecurso(nome) {
+        return this.recursos.find(r => r.nome === nome);
+    }
+    
+    marcarRecursosCarregados(nomes) {
+        nomes.forEach(nome => {
+            this.recursoCarregado(nome, true);
+        });
+    }
+    
+    recursoCarregado(nome, sucesso) {
+        const recurso = this.getRecurso(nome);
+        if (recurso && !recurso.carregado) {
+            recurso.carregado = true;
+            recurso.comErro = !sucesso;
+            
+            if (sucesso) {
+                this.carregado += recurso.peso;
+            } else {
+                this.recursosComErro++;
+                // Dar metade do peso se houve erro
+                this.carregado += (recurso.peso * 0.5);
             }
             
-            inicializar() {
-                this.registrarRecursos();
-                this.iniciarCarregamento();
+            this.atualizarProgresso();
+        }
+    }
+    
+    atualizarProgresso() {
+        // Calcular progresso baseado no total com buffer
+        const progressoBruto = (this.carregado / this.totalBuffer) * 100;
+        
+        // Suavizar progresso (evitar saltos grandes)
+        const diferenca = progressoBruto - this.progresso;
+        this.progresso += diferenca * 0.3;
+        
+        // Limitar entre 0-100
+        this.progresso = Math.min(100, Math.max(0, this.progresso));
+        
+        // Se tiver 95% ou mais de recursos carregados, considerar como 100%
+        const recursosCarregados = this.recursos.filter(r => r.carregado).length;
+        const percentualRecursos = (recursosCarregados / this.recursos.length) * 100;
+        
+        if (percentualRecursos >= 95 && this.progresso >= 95) {
+            this.progresso = 100;
+        }
+        
+        this.atualizarDisplay();
+        
+        // Verificar conclusão
+        this.verificarConclusao();
+    }
+    
+    atualizarDisplay() {
+        // Garantir que elementos existam
+        if (!ELEMENTOS.loadingProgressBar || !ELEMENTOS.loadingStats) return;
+        
+        const progressoExibido = Math.round(this.progresso);
+        
+        // Atualizar barra
+        ELEMENTOS.loadingProgressBar.style.width = `${progressoExibido}%`;
+        
+        // Atualizar texto
+        const recursosCarregados = this.recursos.filter(r => r.carregado).length;
+        const totalRecursos = this.recursos.length;
+        
+        ELEMENTOS.loadingStats.innerHTML = `
+            SISTEMA: 22 ANOS DE LUZ<br>
+            CARREGAMENTO: ${progressoExibido}%<br>
+            RECURSOS: ${recursosCarregados}/${totalRecursos}
+            ${this.recursosComErro > 0 ? `<br>ERROS: ${this.recursosComErro}` : ''}
+        `;
+        
+        // Mudar cor se houver muitos erros
+        if (this.recursosComErro > 5) {
+            ELEMENTOS.loadingStats.style.color = 'var(--ruby-star)';
+        }
+    }
+    
+    iniciarMonitoramento() {
+        // Monitorar progresso e forçar conclusão se necessário
+        const intervalo = setInterval(() => {
+            if (this.carregamentoCompleto) {
+                clearInterval(intervalo);
+                return;
             }
             
-            registrarRecursos() {
-                // Registrar recursos a serem carregados
-                
-                // 1. Fontes (considerar como carregadas)
-                this.adicionarRecurso('fontes', 5);
-                
-                // 2. GSAP (já carregado via CDN)
-                this.adicionarRecurso('gsap', 5);
-                
-                // 3. Three.js (já carregado via CDN)
-                this.adicionarRecurso('threejs', 5);
-                
-                // 4. Anime.js (já carregado via CDN)
-                this.adicionarRecurso('animejs', 5);
-                
-                // 5. Imagens da galeria (27 imagens)
-                for (let i = 1; i <= UNIVERSO.totalImagens; i++) {
-                    this.adicionarRecurso(`imagem-${i}`, 1);
-                }
-                
-                // 6. Vídeos (3 vídeos)
-                for (let i = 1; i <= 3; i++) {
-                    this.adicionarRecurso(`video-${i}`, 3);
-                }
-                
-                // 7. Áudios (7 áudios)
-                for (let i = 1; i <= 7; i++) {
-                    this.adicionarRecurso(`audio-${i}`, 2);
-                }
+            // Se estiver travado acima de 90%, dar um impulso
+            if (this.progresso >= 90 && this.progresso < 100) {
+                this.progresso += 0.5;
+                this.atualizarDisplay();
             }
             
-            adicionarRecurso(nome, peso) {
-                this.recursos.push({
-                    nome: nome,
-                    peso: peso,
-                    carregado: false
-                });
-                this.total += peso;
-            }
-            
-            iniciarCarregamento() {
-                // Carregar recursos em paralelo
-                this.carregarRecursos();
-                
-                // Atualizar progresso periodicamente
-                this.atualizarProgresso();
-            }
-            
-            carregarRecursos() {
-                // Carregar imagens
-                for (let i = 1; i <= UNIVERSO.totalImagens; i++) {
-                    const numeroFormatado = String(i).padStart(2, '0');
-                    const caminhoImagem = `${UNIVERSO.caminhoBaseImagens}${numeroFormatado}${UNIVERSO.extensaoImagem}`;
-                    
-                    const img = new Image();
-                    img.onload = () => this.recursoCarregado(`imagem-${i}`);
-                    img.onerror = () => this.recursoCarregado(`imagem-${i}`); // Considerar carregado mesmo com erro
-                    img.src = caminhoImagem;
-                }
-                
-                // Carregar vídeos (metadados apenas)
-                for (let i = 1; i <= 3; i++) {
-                    const video = document.createElement('video');
-                    video.preload = 'metadata';
-                    video.onloadedmetadata = () => this.recursoCarregado(`video-${i}`);
-                    video.onerror = () => this.recursoCarregado(`video-${i}`);
-                    video.src = `video${i}.mp4`;
-                }
-                
-                // Carregar áudios (metadados apenas)
-                const audios = [
-                    ELEMENTOS.cosmicTrack1,
-                    ELEMENTOS.cosmicTrack2,
-                    ELEMENTOS.cosmicTrack3,
-                    ELEMENTOS.cosmicHeartbeat,
-                    ELEMENTOS.cosmicTransition,
-                    ELEMENTOS.cosmicReveal,
-                    ELEMENTOS.cosmicExplosion
-                ];
-                
-                audios.forEach((audio, index) => {
-                    audio.addEventListener('loadedmetadata', () => this.recursoCarregado(`audio-${index + 1}`));
-                    audio.addEventListener('error', () => this.recursoCarregado(`audio-${index + 1}`));
-                });
-                
-                // Fontes, GSAP, Three.js, Anime.js já estão carregados
+            // Se já passou tempo suficiente, forçar 100%
+            if (this.progresso >= 95 && !this.timeoutAtivado) {
                 setTimeout(() => {
-                    this.recursoCarregado('fontes');
-                    this.recursoCarregado('gsap');
-                    this.recursoCarregado('threejs');
-                    this.recursoCarregado('animejs');
-                }, 500);
-            }
-            
-            recursoCarregado(nome) {
-                const recurso = this.recursos.find(r => r.nome === nome);
-                if (recurso && !recurso.carregado) {
-                    recurso.carregado = true;
-                    this.carregado += recurso.peso;
-                    this.progresso = (this.carregado / this.total) * 100;
-                    
-                    // Atualizar barra de progresso
-                    if (ELEMENTOS.loadingProgressBar) {
-                        ELEMENTOS.loadingProgressBar.style.width = `${this.progresso}%`;
-                    }
-                    
-                    // Atualizar estatísticas
-                    if (ELEMENTOS.loadingStats) {
-                        ELEMENTOS.loadingStats.textContent = 
-                            `SISTEMA: 22 ANOS DE LUZ | CARREGAMENTO: ${Math.round(this.progresso)}%`;
-                    }
-                    
-                    // Verificar se tudo foi carregado
-                    if (this.progresso >= 100 && !this.carregamentoCompleto) {
+                    if (!this.carregamentoCompleto && this.progresso < 100) {
+                        console.log('Forçando conclusão por timeout...');
+                        this.progresso = 100;
                         this.carregamentoCompleto = true;
                         this.carregamentoConcluido();
                     }
-                }
+                }, 2000);
+                this.timeoutAtivado = true;
             }
-            
-            atualizarProgresso() {
-                // Simular progresso adicional para recursos que podem demorar
-                const intervalo = setInterval(() => {
-                    if (this.carregamentoCompleto) {
-                        clearInterval(intervalo);
-                        return;
-                    }
-                    
-                    // Adicionar progresso simulado se estiver travado
-                    if (this.progresso < 95) {
-                        this.progresso += 0.5;
-                        
-                        if (ELEMENTOS.loadingProgressBar) {
-                            ELEMENTOS.loadingProgressBar.style.width = `${this.progresso}%`;
-                        }
-                        
-                        if (ELEMENTOS.loadingStats) {
-                            ELEMENTOS.loadingStats.textContent = 
-                                `SISTEMA: 22 ANOS DE LUZ | CARREGAMENTO: ${Math.round(this.progresso)}%`;
-                        }
-                    }
-                }, 100);
-            }
-            
-            carregamentoConcluido() {
-                // Forçar 100%
+        }, 200);
+    }
+    
+    configurarTimeout() {
+        // Timeout principal de segurança
+        setTimeout(() => {
+            if (!this.carregamentoCompleto) {
+                console.log('Timeout principal ativado, forçando conclusão');
                 this.progresso = 100;
-                
-                if (ELEMENTOS.loadingProgressBar) {
-                    ELEMENTOS.loadingProgressBar.style.width = '100%';
-                }
-                
-                if (ELEMENTOS.loadingStats) {
-                    ELEMENTOS.loadingStats.textContent = 'SISTEMA: 22 ANOS DE LUZ | CARREGAMENTO: 100%';
-                }
-                
-                // Aguardar um momento e iniciar sequência
-                setTimeout(() => {
-                    this.iniciarSequencia();
-                }, 500);
+                this.carregamentoCompleto = true;
+                this.carregamentoConcluido();
             }
-            
-            iniciarSequencia() {
-                // Fade out do loading
-                gsap.to(ELEMENTOS.loadingCosmic, {
-                    opacity: 0,
-                    duration: 1,
-                    ease: 'power2.out',
-                    onComplete: () => {
-                        ELEMENTOS.loadingCosmic.style.display = 'none';
-                        this.iniciarIntroducaoCinematografica();
+        }, 15000); // 15 segundos máximo
+    }
+    
+    verificarConclusao() {
+        if (this.progresso >= 100 && !this.carregamentoCompleto) {
+            this.carregamentoCompleto = true;
+            setTimeout(() => this.carregamentoConcluido(), 300);
+        }
+    }
+    
+    carregamentoConcluido() {
+        console.log('Carregamento concluído!');
+        
+        // Animar para 100% final
+        gsap.to(ELEMENTOS.loadingProgressBar, {
+            width: '100%',
+            duration: 0.5,
+            ease: 'power2.out'
+        });
+        
+        // Atualizar texto final
+        if (ELEMENTOS.loadingStats) {
+            ELEMENTOS.loadingStats.innerHTML = `
+                SISTEMA: 22 ANOS DE LUZ<br>
+                CARREGAMENTO: 100%<br>
+                RECURSOS: ${this.recursos.filter(r => r.carregado).length}/${this.recursos.length}
+                <br>PRONTO PARA INICIAR EXPERIÊNCIA...
+            `;
+            ELEMENTOS.loadingStats.style.color = 'var(--sun-gold)';
+        }
+        
+        // Aguardar e iniciar sequência
+        setTimeout(() => {
+            this.iniciarSequencia();
+        }, 1000);
+    }
+    
+    iniciarSequencia() {
+        // Fade out do loading
+        gsap.to(ELEMENTOS.loadingCosmic, {
+            opacity: 0,
+            duration: 1,
+            ease: 'power2.out',
+            onComplete: () => {
+                ELEMENTOS.loadingCosmic.style.display = 'none';
+                this.iniciarIntroducaoCinematografica();
+            }
+        });
+    }
+    
+    iniciarIntroducaoCinematografica() {
+        // Mostrar introdução cinematográfica
+        ELEMENTOS.introCinematic.style.display = 'flex';
+        ELEMENTOS.introCinematic.classList.add('active');
+        
+        // Iniciar sequência de introdução
+        this.executarSequenciaIntroducao();
+    }
+    
+    executarSequenciaIntroducao() {
+        const timeline = gsap.timeline();
+        
+        // 1. Aparição do título 1
+        timeline.to(ELEMENTOS.cinematicTitle1, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 2,
+            ease: 'back.out(1.2)'
+        });
+        
+        // 2. Som
+        timeline.add(() => {
+            sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicExplosion, 0.5);
+        }, '-=1');
+        
+        // 3. Aparição do título 2
+        timeline.to(ELEMENTOS.cinematicTitle2, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 2,
+            ease: 'back.out(1.2)'
+        }, '+=0.5');
+        
+        // 4. Aparição do título 3
+        timeline.to(ELEMENTOS.cinematicTitle3, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 2,
+            ease: 'back.out(1.2)'
+        }, '+=0.5');
+        
+        // 5. Partículas
+        timeline.add(() => {
+            sistemaParticulasCosmico.criarExplosao(window.innerWidth / 2, window.innerHeight / 2, 50, 'estelar', 1);
+        }, '-=1');
+        
+        // 6. Mostrar letterbox
+        timeline.to('.cinematic-letterbox', {
+            y: 0,
+            duration: 1.5,
+            ease: 'power2.inOut',
+            stagger: 0.1
+        }, '+=0.5');
+        
+        // 7. Contagem regressiva
+        timeline.add(() => {
+            this.iniciarContagemRegressiva();
+        }, '+=1');
+        
+        // 8. Mostrar botão
+        timeline.to(ELEMENTOS.cinematicButton, {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power2.out'
+        }, '+=3');
+    }
+    
+    iniciarContagemRegressiva() {
+        let contagem = 5;
+        
+        const contar = () => {
+            if (contagem > 0) {
+                ELEMENTOS.cinematicCountdown.textContent = contagem;
+                ELEMENTOS.cinematicCountdown.style.opacity = 1;
+                ELEMENTOS.cinematicCountdown.style.scale = 1;
+                
+                // Animação
+                gsap.fromTo(ELEMENTOS.cinematicCountdown,
+                    {
+                        scale: 0.5,
+                        opacity: 0
+                    },
+                    {
+                        scale: 1,
+                        opacity: 1,
+                        duration: 0.8,
+                        ease: 'back.out(1.7)',
+                        onComplete: () => {
+                            gsap.to(ELEMENTOS.cinematicCountdown, {
+                                scale: 0.5,
+                                opacity: 0,
+                                duration: 0.3,
+                                delay: 0.2,
+                                ease: 'power2.in'
+                            });
+                        }
                     }
-                });
-            }
-            
-            iniciarIntroducaoCinematografica() {
-                // Mostrar introdução cinematográfica
-                ELEMENTOS.introCinematic.style.display = 'flex';
-                ELEMENTOS.introCinematic.classList.add('active');
+                );
                 
-                // Iniciar sequência de introdução
-                this.executarSequenciaIntroducao();
-            }
-            
-            executarSequenciaIntroducao() {
-                const timeline = gsap.timeline();
+                // Som
+                sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicWhoosh, 0.3);
                 
-                // 1. Aparição do título 1
-                timeline.to(ELEMENTOS.cinematicTitle1, {
-                    opacity: 1,
-                    y: 0,
-                    scale: 1,
-                    duration: 2,
-                    ease: 'back.out(1.2)'
-                });
+                contagem--;
+                setTimeout(contar, 1000);
+            } else {
+                // Mostrar texto "A EXPERIÊNCIA COMEÇA EM"
+                ELEMENTOS.cinematicCountdownText.style.opacity = 1;
+                ELEMENTOS.cinematicCountdownText.style.y = 0;
                 
-                // 2. Som
-                timeline.add(() => {
-                    sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicExplosion, 0.5);
-                }, '-=1');
-                
-                // 3. Aparição do título 2
-                timeline.to(ELEMENTOS.cinematicTitle2, {
-                    opacity: 1,
-                    y: 0,
-                    scale: 1,
-                    duration: 2,
-                    ease: 'back.out(1.2)'
-                }, '+=0.5');
-                
-                // 4. Aparição do título 3
-                timeline.to(ELEMENTOS.cinematicTitle3, {
-                    opacity: 1,
-                    y: 0,
-                    scale: 1,
-                    duration: 2,
-                    ease: 'back.out(1.2)'
-                }, '+=0.5');
-                
-                // 5. Partículas
-                timeline.add(() => {
-                    sistemaParticulasCosmico.criarExplosao(window.innerWidth / 2, window.innerHeight / 2, 50, 'estelar', 1);
-                }, '-=1');
-                
-                // 6. Mostrar letterbox
-                timeline.to('.cinematic-letterbox', {
-                    y: 0,
-                    duration: 1.5,
-                    ease: 'power2.inOut',
-                    stagger: 0.1
-                }, '+=0.5');
-                
-                // 7. Contagem regressiva
-                timeline.add(() => {
-                    this.iniciarContagemRegressiva();
-                }, '+=1');
-                
-                // 8. Mostrar botão
-                timeline.to(ELEMENTOS.cinematicButton, {
+                gsap.to(ELEMENTOS.cinematicCountdownText, {
                     opacity: 1,
                     y: 0,
                     duration: 1,
                     ease: 'power2.out'
-                }, '+=3');
+                });
             }
-            
-            iniciarContagemRegressiva() {
-                let contagem = 5;
-                
-                const contar = () => {
-                    if (contagem > 0) {
-                        ELEMENTOS.cinematicCountdown.textContent = contagem;
-                        ELEMENTOS.cinematicCountdown.style.opacity = 1;
-                        ELEMENTOS.cinematicCountdown.style.scale = 1;
-                        
-                        // Animação
-                        gsap.fromTo(ELEMENTOS.cinematicCountdown,
-                            {
-                                scale: 0.5,
-                                opacity: 0
-                            },
-                            {
-                                scale: 1,
-                                opacity: 1,
-                                duration: 0.8,
-                                ease: 'back.out(1.7)',
-                                onComplete: () => {
-                                    gsap.to(ELEMENTOS.cinematicCountdown, {
-                                        scale: 0.5,
-                                        opacity: 0,
-                                        duration: 0.3,
-                                        delay: 0.2,
-                                        ease: 'power2.in'
-                                    });
-                                }
-                            }
-                        );
-                        
-                        // Som
-                        sistemaAudioCosmico.tocarEfeitoSonoro(ELEMENTOS.cosmicWhoosh, 0.3);
-                        
-                        contagem--;
-                        setTimeout(contar, 1000);
-                    } else {
-                        // Mostrar texto "A EXPERIÊNCIA COMEÇA EM"
-                        ELEMENTOS.cinematicCountdownText.style.opacity = 1;
-                        ELEMENTOS.cinematicCountdownText.style.y = 0;
-                        
-                        gsap.to(ELEMENTOS.cinematicCountdownText, {
-                            opacity: 1,
-                            y: 0,
-                            duration: 1,
-                            ease: 'power2.out'
-                        });
-                    }
-                };
-                
-                contar();
-            }
-        }
+        };
         
+        contar();
+    }
+}
+
+ 
         // ===========================================
         // INICIALIZAÇÃO DO UNIVERSO
         // ===========================================
@@ -7590,6 +7735,7 @@ Com todo amor dos múltiplos universos,`,
         console.log('🌟 SISTEMA CINEMATOGRÁFICO DE 22 ANOS');
         console.log('🌟 Dedicado a: Diolinda Geraldo Langa');
         console.log('🌟 Data: 20 de Janeiro de 2026');
+        
    </script>
 </body>
 </html>
